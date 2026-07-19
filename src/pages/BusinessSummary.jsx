@@ -153,17 +153,25 @@ export default function BusinessSummary() {
 
   // WhatsApp text of the combined summary — same figures as on screen,
   // built fresh at send time. Not shown on the page.
+  // Colored indicators built via \u escapes (not literal glyphs) so the
+  // source file's own encoding can never corrupt them into "�" — this is
+  // what was happening with the literal emoji characters before.
+  const DOT_UP   = '\u2705'          // ✅ green check
+  const DOT_DOWN = '\u{1F534}'       // 🔴 red circle
+  const DOT_FLAT = '\u26AA'          // ⚪ white circle
+  const WARN     = '\u26A0\uFE0F'    // ⚠️ warning
+
   function buildWaMessage() {
     if (!view) return ''
     const L = []
     L.push(`*Charan Logistics — Business Summary*`)
     L.push(`${monthLabel} vs ${prevLabel}`)
-    if (isPartial) L.push(`⚠️ ${monthLabel} is still in progress — partial-month comparison.`)
+    if (isPartial) L.push(`${WARN} ${monthLabel} is still in progress — partial-month comparison.`)
     L.push('')
     L.push(view.headline)
     L.push('')
     const lane = (name, l) => {
-      const dot = l.delta > 1 ? '✅▲' : l.delta < -1 ? '🔴▼' : '⚪→'
+      const dot = l.delta > 1 ? `${DOT_UP}▲` : l.delta < -1 ? `${DOT_DOWN}▼` : `${DOT_FLAT}→`
       return `${name}: S$ ${fmt(l.cur)} (prev S$ ${fmt(l.prev)}) ${dot} ${signed(l.delta)}`
     }
     L.push(lane('Invoiced', view.lanes.inv))
@@ -173,18 +181,18 @@ export default function BusinessSummary() {
     if (Math.abs(view.unbilledGap) >= 1) {
       L.push('')
       L.push(view.unbilledGap > 0
-        ? `🔴 Gap: S$ ${fmt(view.unbilledGap)} of logged jobs not yet billed.`
-        : `✅ Billed S$ ${fmt(Math.abs(view.unbilledGap))} above logged jobs (advance / prior-month billing).`)
+        ? `${DOT_DOWN} Gap: S$ ${fmt(view.unbilledGap)} of logged jobs not yet billed.`
+        : `${DOT_UP} Billed S$ ${fmt(Math.abs(view.unbilledGap))} above logged jobs (advance / prior-month billing).`)
     }
     if (view.hurt.length) {
       L.push('')
       L.push('*What hurt the month:*')
-      view.hurt.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) 🔴 ${signed(m.impact)} — ${m.detail}`))
+      view.hurt.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${DOT_DOWN} ${signed(m.impact)} — ${m.detail}`))
     }
     if (view.helped.length) {
       L.push('')
       L.push('*What helped the month:*')
-      view.helped.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ✅ ${signed(m.impact)} — ${m.detail}`))
+      view.helped.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${DOT_UP} ${signed(m.impact)} — ${m.detail}`))
     }
     L.push('')
     L.push('_Exact sums of logged entries — nothing estimated. Green helped, red hurt._')
