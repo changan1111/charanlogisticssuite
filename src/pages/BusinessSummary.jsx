@@ -162,7 +162,10 @@ export default function BusinessSummary() {
     L.push('')
     L.push(view.headline)
     L.push('')
-    const lane = (name, l) => `${name}: S$ ${fmt(l.cur)} (prev S$ ${fmt(l.prev)}) ${l.delta > 1 ? '▲' : l.delta < -1 ? '▼' : '→'} ${signed(l.delta)}`
+    const lane = (name, l) => {
+      const dot = l.delta > 1 ? '✅▲' : l.delta < -1 ? '🔴▼' : '⚪→'
+      return `${name}: S$ ${fmt(l.cur)} (prev S$ ${fmt(l.prev)}) ${dot} ${signed(l.delta)}`
+    }
     L.push(lane('Invoiced', view.lanes.inv))
     L.push(lane('Fleet earnings', view.lanes.earn))
     L.push(lane('Fleet expenses', view.lanes.exp))
@@ -170,18 +173,18 @@ export default function BusinessSummary() {
     if (Math.abs(view.unbilledGap) >= 1) {
       L.push('')
       L.push(view.unbilledGap > 0
-        ? `Gap: S$ ${fmt(view.unbilledGap)} of logged jobs not yet billed.`
-        : `Billed S$ ${fmt(Math.abs(view.unbilledGap))} above logged jobs (advance / prior-month billing).`)
+        ? `🔴 Gap: S$ ${fmt(view.unbilledGap)} of logged jobs not yet billed.`
+        : `✅ Billed S$ ${fmt(Math.abs(view.unbilledGap))} above logged jobs (advance / prior-month billing).`)
     }
     if (view.hurt.length) {
       L.push('')
       L.push('*What hurt the month:*')
-      view.hurt.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${signed(m.impact)} — ${m.detail}`))
+      view.hurt.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) 🔴 ${signed(m.impact)} — ${m.detail}`))
     }
     if (view.helped.length) {
       L.push('')
       L.push('*What helped the month:*')
-      view.helped.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${signed(m.impact)} — ${m.detail}`))
+      view.helped.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ✅ ${signed(m.impact)} — ${m.detail}`))
     }
     L.push('')
     L.push('_Exact sums of logged entries — nothing estimated. Green helped, red hurt._')
