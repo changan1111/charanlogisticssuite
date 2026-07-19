@@ -63,11 +63,11 @@ export default function LineItemsEditor({ value, onChange }) {
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
-        <table className="qt-items-table" style={{ minWidth: 620, tableLayout: 'fixed' }}>
+        <table className="qt-items-table" style={{ minWidth: 640, tableLayout: 'fixed' }}>
           <thead>
             <tr>
               <th style={{ width: 34 }}>#</th>
-              <th style={{ width: 148 }}>Date</th>
+              <th style={{ width: 166 }}>Date</th>
               <th>Description <span style={{ color: '#f0d080' }}>*</span></th>
               <th style={{ width: 64, textAlign: 'center' }}>Qty <span style={{ color: '#f0d080' }}>*</span></th>
               <th style={{ width: 112, textAlign: 'right' }}>Rate (S$) <span style={{ color: '#f0d080' }}>*</span></th>
@@ -81,7 +81,7 @@ export default function LineItemsEditor({ value, onChange }) {
               return (
                 <tr key={r.id}>
                   <td style={{ textAlign: 'center', color: '#7a6e58', fontWeight: 600, fontSize: '.82rem' }}>{i + 1}</td>
-                  <td><input type="date" value={r.date} onChange={e => update(r.id, 'date', e.target.value)} style={{ width: 138, minWidth: 138 }} /></td>
+                  <td><input type="date" value={r.date} onChange={e => update(r.id, 'date', e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} /></td>
                   <td style={{ verticalAlign: 'top', padding: '4px' }}>
                     <textarea
                       placeholder="Description (Enter = new line)"
