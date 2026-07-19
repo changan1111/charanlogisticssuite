@@ -121,3 +121,14 @@
 .bsum-status i { font-style: normal; font-size: .75rem; color: var(--muted, #6b82a8); }
 
 .bsum-empty.in-block { padding: 16px 22px; }
+
+/* ── WhatsApp send / copy ── */
+.bsum-wa-btn, .bsum-copy-btn {
+  padding: 8px 16px; border-radius: 10px; font-family: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; border: 1px solid var(--border, #d3dff0);
+  background: #fff; color: var(--ink, #0b1d3a); transition: all .15s;
+}
+.bsum-wa-btn { background: #25d366; border-color: #25d366; color: #fff; }
+.bsum-wa-btn:hover:not(:disabled) { background: #1ebe5a; }
+.bsum-copy-btn:hover:not(:disabled) { border-color: var(--ink, #0b1d3a); }
+.bsum-wa-btn:disabled, .bsum-copy-btn:disabled { opacity: .45; cursor: default; }

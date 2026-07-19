@@ -149,6 +149,48 @@ export default function BusinessSummary() {
   const p = prevOf(month, year)
   const prevLabel = `${MONTHS[p.m]} ${p.y}`
   const isPartial = year === now.getFullYear() && month === now.getMonth()
+  const [copied, setCopied] = useState(false)
+
+  // WhatsApp text of the combined summary — same figures as on screen,
+  // built fresh at send time. Not shown on the page.
+  function buildWaMessage() {
+    if (!view) return ''
+    const L = []
+    L.push(`*Charan Logistics — Business Summary*`)
+    L.push(`${monthLabel} vs ${prevLabel}`)
+    if (isPartial) L.push(`⚠️ ${monthLabel} is still in progress — partial-month comparison.`)
+    L.push('')
+    L.push(view.headline)
+    L.push('')
+    const lane = (name, l) => `${name}: S$ ${fmt(l.cur)} (prev S$ ${fmt(l.prev)}) ${l.delta > 1 ? '▲' : l.delta < -1 ? '▼' : '→'} ${signed(l.delta)}`
+    L.push(lane('Invoiced', view.lanes.inv))
+    L.push(lane('Fleet earnings', view.lanes.earn))
+    L.push(lane('Fleet expenses', view.lanes.exp))
+    L.push(lane('Fleet net', view.lanes.net))
+    if (Math.abs(view.unbilledGap) >= 1) {
+      L.push('')
+      L.push(view.unbilledGap > 0
+        ? `Gap: S$ ${fmt(view.unbilledGap)} of logged jobs not yet billed.`
+        : `Billed S$ ${fmt(Math.abs(view.unbilledGap))} above logged jobs (advance / prior-month billing).`)
+    }
+    if (view.hurt.length) {
+      L.push('')
+      L.push('*What hurt the month:*')
+      view.hurt.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${signed(m.impact)} — ${m.detail}`))
+    }
+    if (view.helped.length) {
+      L.push('')
+      L.push('*What helped the month:*')
+      view.helped.slice(0, 4).forEach(m => L.push(`- ${m.label} (${m.lane.toLowerCase()}) ${signed(m.impact)} — ${m.detail}`))
+    }
+    L.push('')
+    L.push('_Exact sums of logged entries — nothing estimated. Green helped, red hurt._')
+    return L.join('\n')
+  }
+  const sendWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(buildWaMessage())}`, '_blank')
+  const copyMsg = async () => {
+    try { await navigator.clipboard.writeText(buildWaMessage()); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+  }
 
   return (
     <div className="bsum">
@@ -164,6 +206,8 @@ export default function BusinessSummary() {
           <select value={year} onChange={e => setYear(+e.target.value)}>
             {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
+          <button className="bsum-wa-btn" onClick={sendWhatsApp} disabled={loading || !!error || !view} title="Send this summary on WhatsApp">📲 WhatsApp</button>
+          <button className="bsum-copy-btn" onClick={copyMsg} disabled={loading || !!error || !view} title="Copy summary text">{copied ? '✓ Copied' : '📋 Copy'}</button>
         </div>
       </div>
 
