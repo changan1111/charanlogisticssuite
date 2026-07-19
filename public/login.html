@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Charan Logistics Invoice — Access</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0d1117; --ink2: #161b22; --ink3: #1c2333;
+      --amber: #d4902a; --amber2: #f0b84a;
+      --cream: #f5efe0; --muted: #7a8599; --dim: #3d4a5c; --red: #e05252;
+    }
+    html, body { height: 100%; overflow-x: hidden; overflow-y: auto; font-family: 'IBM Plex Sans', sans-serif; background: var(--ink); }
+    .bg-base {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 120% 80% at 110% 110%, rgba(212,144,42,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 60% at -10% -10%, rgba(28,35,51,0.9) 0%, transparent 60%),
+        var(--ink);
+    }
+    .bg-dots {
+      position: fixed; inset: 0; z-index: 0;
+      background-image: radial-gradient(rgba(212,144,42,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .bg-glow {
+      position: fixed; z-index: 0; bottom: -120px; left: -80px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(28,35,51,0.8) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .collage-wrap { display: flex; justify-content: center; align-items: center; }
+    .collage-wrap canvas { border-radius: 50%; }
+    .page {
+      position: relative; z-index: 1; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .card { width: 100%; max-width: 420px; position: relative; }
+    .card::before, .card::after {
+      content: ''; position: absolute;
+      width: 22px; height: 22px; border-color: rgba(212,144,42,0.35); border-style: solid;
+    }
+    .card::before { top: -7px; left: -7px; border-width: 2px 0 0 2px; }
+    .card::after  { bottom: -7px; right: -7px; border-width: 0 2px 2px 0; }
+    .card-inner {
+      background: rgba(22,27,34,0.88);
+      border: 1px solid rgba(212,144,42,0.13);
+      border-radius: 4px; padding: 52px 44px 44px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 32px 64px rgba(0,0,0,0.6);
+      animation: rise 0.65s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .form-title {
+      font-size: 12px; font-weight: 500; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-align: center; margin-bottom: 8px;
+    }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,144,42,0.2), transparent); }
+    .divider-dot  { width: 4px; height: 4px; border-radius: 50%; background: rgba(212,144,42,0.3); }
+    .field-label {
+      display: block; font-size: 11px; color: var(--muted);
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .error-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.22);
+      border-radius: 3px; color: #f08080; font-size: 12.5px;
+      margin-bottom: 18px;
+      opacity: 0; transform: translateY(-4px);
+      transition: opacity 0.2s, transform 0.2s; pointer-events: none;
+    }
+    .error-banner.show { opacity: 1; transform: translateY(0); pointer-events: auto; animation: jolt 0.35s ease; }
+    @keyframes jolt { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .field { position: relative; margin-bottom: 14px; }
+    .field input {
+      width: 100%; padding: 13px 48px 13px 16px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 3px; color: var(--cream);
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+      outline: none; letter-spacing: 0.04em;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .field input::placeholder { color: var(--dim); }
+    .field input:focus {
+      border-color: rgba(212,144,42,0.42);
+      background: rgba(212,144,42,0.04);
+      box-shadow: 0 0 0 3px rgba(212,144,42,0.07);
+    }
+    .field input.err { border-color: rgba(224,82,82,0.4); }
+    .eye-btn {
+      position: absolute; right: 0; top: 0; bottom: 0; width: 46px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; cursor: pointer; color: var(--dim);
+      transition: color 0.15s;
+    }
+    .eye-btn:hover { color: var(--cream); }
+    .btn {
+      width: 100%; padding: 13px 16px;
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber2) 100%);
+      color: var(--ink); font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; border-radius: 3px; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: opacity 0.15s, transform 0.12s, box-shadow 0.15s;
+      box-shadow: 0 4px 18px rgba(212,144,42,0.28);
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 7px 24px rgba(212,144,42,0.38); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn .label { transition: opacity 0.2s; }
+    .btn .spinner-wrap {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn.loading .label { opacity: 0; }
+    .btn.loading .spinner-wrap { opacity: 1; }
+    .ring {
+      width: 18px; height: 18px; border: 2px solid rgba(13,17,23,0.25);
+      border-top-color: var(--ink); border-radius: 50%; animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--dim); letter-spacing: 0.05em; line-height: 1.9; }
+    .footer-amber { color: rgba(212,144,42,0.45); }
+    @media (max-width: 480px) { .card-inner { padding: 38px 26px 34px; } }
+  </style>
+</head>
+<body>
+<div class="bg-base"></div>
+<div class="bg-dots"></div>
+<div class="bg-glow"></div>
+
+<div class="page">
+  <div class="card">
+    <div class="card-inner">
+
+      <div class="collage-wrap">
+        <canvas id="circleCollage" width="300" height="300"></canvas>
+      </div>
+      <div class="form-title" style="margin-top:18px">Charan Logistics Pte Ltd</div>
+      <div class="form-title">Reg No: 202502540D · Singapore</div>
+      <div class="divider">
+        <div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div>
+      </div>
+
+      <div id="formArea">
+        <div class="form-title" style="margin-bottom:18px">🔒 Authorised Access Only</div>
+        <div class="error-banner" id="errBanner">
+          <span>⚠</span><span id="errText">Incorrect credentials.</span>
+        </div>
+
+        <label class="field-label" for="emailInput">Email</label>
+        <div class="field">
+          <input type="email" id="emailInput"
+            placeholder="your@email.com"
+            autocomplete="email" autofocus
+            style="padding:13px 16px"/>
+        </div>
+
+        <label class="field-label" for="pwInput">Password</label>
+        <div class="field">
+          <input type="password" id="pwInput"
+            placeholder="Enter password"
+            autocomplete="current-password"/>
+          <button class="eye-btn" onclick="toggleEye()" type="button">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+
+        <button class="btn" id="loginBtn" onclick="handleLogin()" style="margin-top:8px">
+          <span class="label">Sign In →</span>
+          <span class="spinner-wrap"><span class="ring"></span></span>
+        </button>
+      </div>
+
+      <div class="footer">
+        <span class="footer-amber">◆</span> Documents Hub — Payroll &amp; Quotations<br>
+        Contact admin if you need access
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ─────────────────────────────────────────────────────────
+//  Injected by GitHub Actions on deploy. Do NOT edit manually.
+// ─────────────────────────────────────────────────────────
+const SUPABASE_URL     = "https://tcqtwakxszryzrfxoyze.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjcXR3YWt4c3pyeXpyZnhveXplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzQzNzUsImV4cCI6MjA4OTE1MDM3NX0.uMYxktFu0E04WrM8VGsXng7WkuO6ACUBIAvoceylXS0";
+
+
+
+// ─────────────────────────────────────────────────────────
+
+
+
+// Guarded init — if credentials are missing/placeholder, show a clear
+// message instead of a dead page ("Cannot access 'sb' before initialization").
+let sb = null;
+(function initSupabase() {
+  const notInjected = SUPABASE_URL.indexOf('%%') !== -1 || !SUPABASE_URL;
+  try {
+    if (notInjected) throw new Error('placeholder');
+    const { createClient } = supabase;
+    sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (e) {
+    window.addEventListener('DOMContentLoaded', () => {
+      const msg = notInjected
+        ? 'Supabase credentials not configured. Local dev: fill .env and run "node inject-login-env.js". Deploy: set VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY repo secrets.'
+        : 'Could not initialize Supabase: ' + e.message;
+      const t = document.getElementById('errText');
+      const b = document.getElementById('errBanner');
+      if (t && b) { t.textContent = msg; b.classList.add('show'); }
+      const btn = document.getElementById('loginBtn');
+      if (btn) btn.disabled = true;
+      console.error(msg);
+    });
+  }
+})();
+
+// Truck collage
+const IMAGES=["Truck1.jpeg","Truck2.jpeg","Truck3.jpeg","Truck4.jpeg"];
+const SIZE=300,CX=150,CY=150,R=150,BORDER=6;
+const canvas=document.getElementById('circleCollage'),ctx=canvas.getContext('2d');
+const quads=[{x:0,y:0,w:CX,h:CY},{x:CX,y:0,w:CX,h:CY},{x:0,y:CY,w:CX,h:CY},{x:CX,y:CY,w:CX,h:CY}];
+function loadImage(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});}
+function drawCover(img,qx,qy,qw,qh){const ir=img.width/img.height,qr=qw/qh;let sw,sh,sx,sy;if(ir>qr){sh=img.height;sw=sh*qr;sx=(img.width-sw)/2;sy=0;}else{sw=img.width;sh=sw/qr;sx=0;sy=(img.height-sh)/2;}ctx.drawImage(img,sx,sy,sw,sh,qx,qy,qw,qh);}
+async function draw(){
+  const loaded=await Promise.all(IMAGES.map(loadImage));
+  ctx.save();ctx.beginPath();ctx.arc(CX,CY,R-BORDER/2,0,Math.PI*2);ctx.clip();
+  quads.forEach((q,i)=>{if(loaded[i])drawCover(loaded[i],q.x,q.y,q.w,q.h);else{ctx.fillStyle='#122240';ctx.fillRect(q.x,q.y,q.w,q.h);}});
+  ctx.strokeStyle='rgba(0,20,50,0.7)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(CX,0);ctx.lineTo(CX,SIZE);ctx.moveTo(0,CY);ctx.lineTo(SIZE,CY);ctx.stroke();
+  ctx.restore();
+  ctx.beginPath();ctx.arc(CX,CY,R-BORDER/2,0,Math.PI*2);ctx.strokeStyle='#D4AF37';ctx.lineWidth=BORDER;ctx.stroke();
+  ctx.beginPath();ctx.arc(CX,CY,6,0,Math.PI*2);ctx.fillStyle='#D4AF37';ctx.fill();
+}
+draw();
+
+// Already logged in → skip to dashboard
+if (sb) sb.auth.getUser().then(({ data: { user } }) => {
+  if (user) window.location.replace('./index.html');
+});
+
+function toggleEye() {
+  const i=document.getElementById('pwInput'),icon=document.getElementById('eyeIcon');
+  i.type=i.type==='password'?'text':'password';
+  icon.innerHTML=i.type==='password'
+    ?'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+    :'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+}
+
+function showError(msg){
+  document.getElementById('errText').textContent=msg;
+  const b=document.getElementById('errBanner');
+  b.classList.remove('show');void b.offsetWidth;b.classList.add('show');
+  document.getElementById('pwInput').classList.add('err');
+}
+function clearError(){
+  document.getElementById('errBanner').classList.remove('show');
+  document.getElementById('pwInput').classList.remove('err');
+}
+
+document.getElementById('pwInput').addEventListener('keydown',e=>{clearError();if(e.key==='Enter')handleLogin();});
+document.getElementById('emailInput').addEventListener('keydown',e=>{clearError();if(e.key==='Enter')handleLogin();});
+
+async function handleLogin() {
+  const email = document.getElementById('emailInput').value.trim();
+  const pw    = document.getElementById('pwInput').value;
+  if (!sb) { showError('Supabase is not configured — see console for setup steps.'); return; }
+  if (!email || !pw) { showError('Please enter your email and password.'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    btn.classList.remove('loading'); btn.disabled = false;
+    // Supabase rate-limits automatically after too many wrong attempts
+    showError(error.message || 'Incorrect credentials.');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+    return;
+  }
+
+  btn.style.background = 'linear-gradient(135deg,#3a8a5a,#5ab878)';
+  btn.querySelector('.label').textContent = '✓ Access Granted';
+  setTimeout(() => window.location.href = './index.html', 550);
+}
+</script>
+</body>
+</html>

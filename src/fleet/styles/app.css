@@ -1,0 +1,407 @@
+  #fleet-root {
+    --bg:#09090d; --surface:#101018; --card:#14141e; --border:#d3dff0;
+    --accent:#1c4480; --accent-dim:#1c448018;
+    --green:#22c55e; --green-dim:#22c55e18;
+    --red:#ef4444;   --red-dim:#ef444418;
+    --muted:#52526a; --text:#e4e4f0;
+    --kaira:#f59e0b; --jit:#06b6d4; --lm:#10b981; --other:#a78bfa;
+    --input-bg:#08080c; --input-border:#2c2c40;
+  }
+  #fleet-root ::-webkit-scrollbar {width:4px;height:4px}
+  #fleet-root ::-webkit-scrollbar-track {background:var(--surface)}
+  #fleet-root ::-webkit-scrollbar-thumb {background:var(--accent);border-radius:2px}
+  #fleet-root .mono {font-family:'JetBrains Mono',monospace}
+
+  /* ── Header ── */
+  #fleet-root #app-header {background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+  #fleet-root .header-inner {max-width:1180px;margin:0 auto;padding:0 20px}
+  #fleet-root .header-top {display:flex;align-items:center;justify-content:space-between;padding:16px 0 0;flex-wrap:wrap;gap:10px}
+  #fleet-root .header-brand .sub {font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+  #fleet-root .header-brand h1 {font-size:20px;font-weight:800;letter-spacing:-0.5px}
+  #fleet-root .client-pills {display:flex;gap:6px;flex-wrap:wrap}
+  #fleet-root .pill {display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.5px}
+  #fleet-root .tabs {display:flex;gap:0;margin-top:14px;overflow-x:auto}
+  #fleet-root .tab-btn {display:inline-block;text-decoration:none;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:10px 14px;cursor:pointer;transition:color .2s,border-color .2s;white-space:nowrap}
+  #fleet-root .tab-btn:hover {color:var(--text)}
+  #fleet-root .tab-btn.active {color:var(--accent);border-bottom-color:var(--accent)}
+
+  /* ── Main ── */
+  #fleet-root .main {max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+  #fleet-root .page {display:none;animation:fadeUp .3s ease}
+  #fleet-root .page.active {display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── Forms ── */
+  #fleet-root .label {display:block;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+  #fleet-root .input, #fleet-root .select, #fleet-root .textarea {width:100%;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:8px;color:var(--text);padding:10px 14px;font-family:'Outfit',sans-serif;font-size:14px;transition:border-color .2s,box-shadow .2s;outline:none;box-shadow:inset 0 1px 3px #00000022}
+  #fleet-root .input:focus, #fleet-root .select:focus, #fleet-root .textarea:focus {border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+  #fleet-root input[type="date"].input {color:var(--text);-webkit-text-fill-color:var(--text)}
+  input[type="date"].input::-webkit-datetime-edit,
+  input[type="date"].input::-webkit-datetime-edit-fields-wrapper,
+  input[type="date"].input::-webkit-datetime-edit-text,
+  input[type="date"].input::-webkit-datetime-edit-day-field,
+  input[type="date"].input::-webkit-datetime-edit-month-field,
+  #fleet-root input[type="date"].input::-webkit-datetime-edit-year-field {
+    color:var(--text);-webkit-text-fill-color:var(--text);opacity:1
+  }
+  #fleet-root input[type="date"].input::-webkit-calendar-picker-indicator {opacity:.8;cursor:pointer}
+  #fleet-root .select option {background:#ffffff}
+  #fleet-root .textarea {resize:vertical}
+  #fleet-root .field {margin-bottom:14px}
+  #fleet-root .type-toggle {display:flex;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:24px;border:1px solid var(--border)}
+  #fleet-root .type-btn {flex:1;padding:10px 0;border:1px solid transparent;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--muted)}
+  #fleet-root .type-btn.earn-active {background:var(--green-dim);color:var(--green);border-color:#22c55e44}
+  #fleet-root .type-btn.exp-active {background:var(--red-dim);color:var(--red);border-color:#ef444444}
+  #fleet-root .type-btn.cash-active {background:#06b6d418;color:#06b6d4;border-color:#06b6d444}
+  #fleet-root .btn-save {width:100%;padding:14px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;margin-top:6px}
+  #fleet-root .btn-save:active {transform:scale(.98)}
+  #fleet-root .btn-save.earn {background:var(--green);color:#000}
+  #fleet-root .btn-save.exp {background:var(--red);color:#fff}
+  #fleet-root .toast {padding:12px 16px;border-radius:8px;font-size:13px;text-align:center;margin-top:12px;display:none}
+  #fleet-root .toast.ok {background:var(--green-dim);color:var(--green);border:1px solid #22c55e44}
+  #fleet-root .toast.err {background:var(--red-dim);color:var(--red);border:1px solid #ef444444}
+  /* ── Trip badge ── */
+  #fleet-root .trip-badge {display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700;background:#06b6d418;color:#06b6d4;border:1px solid #06b6d433}
+  /* ── Stat / Section cards ── */
+  #fleet-root .stat-row {display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  #fleet-root .stat-card {flex:1;min-width:130px;background:var(--card);border-radius:12px;padding:16px 18px;border:1px solid var(--border)}
+  #fleet-root .stat-card .slabel {font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+  #fleet-root .stat-card .sval {font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700}
+  #fleet-root .stat-card .ssub {font-size:10px;color:var(--muted);margin-top:4px}
+  #fleet-root .section-card {background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
+  #fleet-root .section-title {font-size:10px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:14px}
+
+  /* ══ ADD ENTRY — two-column desktop layout ══ */
+  #fleet-root .addentry-layout {display:flex;gap:24px;max-width:1040px;margin:0 auto;align-items:flex-start;flex-wrap:wrap}
+  #fleet-root .addentry-form-col {flex:1 1 420px;max-width:600px;min-width:0}
+  #fleet-root .addentry-side-col {flex:1 1 300px;max-width:380px;min-width:280px;position:sticky;top:20px}
+  @media(max-width:860px){
+    #fleet-root .addentry-layout {display:block;max-width:600px}
+    #fleet-root .addentry-form-col, #fleet-root .addentry-side-col {max-width:none}
+    #fleet-root .addentry-side-col {position:static;margin-top:4px}
+  }
+  #fleet-root .client-grid {display:flex;gap:10px;flex-wrap:wrap}
+  #fleet-root .client-box {flex:1;min-width:110px;background:var(--surface);border-radius:10px;padding:14px;border:1px solid transparent}
+  #fleet-root .client-box .clabel {font-size:11px;font-weight:700;margin-bottom:6px}
+  #fleet-root .client-box .cpct {font-size:10px;color:var(--muted);float:right}
+  #fleet-root .client-box .cval {font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700}
+  #fleet-root .client-box .cbar-bg {height:4px;background:var(--border);border-radius:2px;margin-top:8px}
+  #fleet-root .client-box .cbar {height:4px;border-radius:2px;transition:width .5s ease}
+  #fleet-root .exp-row {display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  #fleet-root .exp-name {font-size:12px;color:var(--text);width:170px;flex-shrink:0}
+  #fleet-root .exp-bar-bg {flex:1;height:6px;background:var(--border);border-radius:3px}
+  #fleet-root .exp-bar {height:6px;border-radius:3px;background:var(--red);transition:width .5s}
+  #fleet-root .exp-amt {font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);width:90px;text-align:right}
+
+  /* ── Day cards ── */
+  #fleet-root .day-card {background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
+  #fleet-root .day-header {display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--surface);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+  #fleet-root .day-label {font-size:13px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  #fleet-root .day-amounts {display:flex;gap:12px;align-items:center}
+  #fleet-root .day-body {padding:6px 16px 10px}
+  #fleet-root .entry-row {display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #d3dff033}
+  #fleet-root .entry-row:last-child {border-bottom:none}
+  #fleet-root .dot {width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+  #fleet-root .entry-info {flex:1}
+  #fleet-root .entry-meta {display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  #fleet-root .entry-note {font-size:11px;color:var(--muted);margin-top:2px}
+  #fleet-root .entry-amt {font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;white-space:nowrap}
+  #fleet-root .client-tag {display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.3px}
+  #fleet-root .exp-tag {display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--red-dim);color:var(--red);border:1px solid #ef444433}
+
+  /* ── Edit / Delete row action buttons ── */
+  #fleet-root .row-actions {display:flex;gap:4px;flex-shrink:0;margin-left:4px;align-items:flex-start;padding-top:2px}
+  #fleet-root .btn-edit-row {padding:3px 8px;border-radius:5px;border:1px solid #1c448044;background:var(--accent-dim);color:var(--accent);font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .15s;white-space:nowrap}
+  #fleet-root .btn-edit-row:hover {background:#1c448030}
+  #fleet-root .btn-del-row {padding:3px 8px;border-radius:5px;border:1px solid #ef444433;background:transparent;color:var(--red);font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .15s;white-space:nowrap}
+  #fleet-root .btn-del-row:hover {background:var(--red-dim)}
+
+  /* ── Dashboard table ── */
+  #fleet-root .dtable-wrap {overflow-x:auto}
+  #fleet-root table {width:100%;border-collapse:collapse}
+  #fleet-root th {padding:10px 12px;font-size:10px;color:var(--muted);text-align:left;letter-spacing:.5px;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface)}
+  #fleet-root td {padding:11px 12px;font-size:12px;border-bottom:1px solid #d3dff044}
+  #fleet-root tr:last-child td {border-bottom:none}
+  #fleet-root tr:hover td {background:#0b1d3a08}
+
+  /* ── Charts tab ── */
+  #fleet-root .chart-controls {display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end}
+  #fleet-root .chart-controls .field {margin-bottom:0;flex:1;min-width:140px}
+  #fleet-root .chart-wrap {background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+  #fleet-root .chart-wrap canvas {max-height:280px}
+  #fleet-root .chart-title {font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+  #fleet-root .chart-sub {font-size:10px;color:var(--muted);margin-bottom:14px}
+  #fleet-root .v-tab-strip {display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+  #fleet-root .v-tab {padding:6px 13px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+  #fleet-root .v-tab.active {background:var(--accent-dim);color:var(--accent);border-color:#1c448055}
+  #fleet-root .trend-badge {display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700}
+  #fleet-root .t-up {background:var(--green-dim);color:var(--green)}
+  #fleet-root .t-dn {background:var(--red-dim);color:var(--red)}
+  #fleet-root .t-fl {background:#d3dff0;color:var(--muted)}
+  #fleet-root .compare-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:20px}
+  #fleet-root .compare-card {background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  #fleet-root .compare-card .cv-label {font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:12px}
+  #fleet-root .compare-card canvas {max-height:150px}
+
+  /* ── Modal ── */
+  #fleet-root .modal-overlay {position:fixed;inset:0;background:#000000cc;z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+  #fleet-root .modal-overlay.open {display:flex}
+  #fleet-root .modal {background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:480px;animation:fadeUp .25s ease;max-height:90vh;overflow-y:auto}
+  #fleet-root .modal h2 {font-size:18px;font-weight:800;margin-bottom:6px}
+  #fleet-root .modal p {font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+  #fleet-root .config-btns {display:flex;gap:10px;margin-top:16px}
+  #fleet-root .btn-outline {flex:1;padding:11px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;font-weight:600;transition:border-color .2s,color .2s}
+  #fleet-root .btn-outline:hover {border-color:var(--accent);color:var(--accent)}
+  #fleet-root .btn-primary {flex:1;padding:11px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;font-weight:700}
+  #fleet-root .cfg-btn {position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;box-shadow:0 4px 20px #1c448055;z-index:50;transition:transform .2s}
+  #fleet-root .cfg-btn:hover {transform:scale(1.1)}
+  #fleet-root .no-data {text-align:center;color:var(--muted);padding:50px 0;font-size:13px}
+  #fleet-root .setup-box {background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:28px}
+
+  /* ── Edit Modal specific ── */
+  #fleet-root #editModal .modal {border-color:#1c448033;max-width:440px}
+  #fleet-root #editModal .modal-title {font-size:14px;font-weight:800;color:var(--accent);letter-spacing:.5px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  #fleet-root #cashEditModal .modal {border-color:#06b6d433;max-width:440px}
+  #fleet-root #cashEditModal .modal-title {font-size:14px;font-weight:800;color:#06b6d4;letter-spacing:.5px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  #fleet-root .edit-modal-actions {display:flex;gap:10px;margin-top:20px}
+  #fleet-root .btn-modal-save {flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s}
+  #fleet-root .btn-modal-save:disabled {opacity:.5}
+  #fleet-root .btn-modal-save.cash-save {background:#06b6d4}
+  #fleet-root .btn-modal-cancel {padding:12px 18px;background:transparent;border:1px solid var(--border);border-radius:9px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+
+  /* ── Cash on Hand tab ── */
+  #fleet-root .cash-layout {display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  @media(max-width:700px){
+    #fleet-root .cash-layout {grid-template-columns:1fr}
+    #fleet-root .cash-ledger-col {order:2}
+    #fleet-root .cash-form-col {order:1}
+  }
+  #fleet-root .cash-form-card {background:var(--card);border:1px solid #06b6d433;border-radius:14px;padding:22px;position:sticky;top:80px}
+  #fleet-root .cash-form-title {font-size:10px;color:#06b6d4;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:18px}
+
+  /* ── Cash ledger ── */
+  #fleet-root .cash-ledger {background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  #fleet-root .cash-ledger-header {padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border)}
+  #fleet-root .cash-ledger-title {font-size:10px;color:#06b6d4;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:10px}
+
+  #fleet-root .cash-filter-row {display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  #fleet-root .cash-filter-row select {flex:1;min-width:100px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:6px;color:var(--text);padding:7px 10px;font-family:'Outfit',sans-serif;font-size:12px;outline:none;cursor:pointer}
+  #fleet-root .cash-filter-row select:focus {border-color:#06b6d4}
+  #fleet-root .cash-filter-row #cashLedgerVehicle {flex:2;min-width:130px}
+
+  #fleet-root .cash-summary-strip {display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
+  #fleet-root .cash-summary-cell {flex:1;min-width:90px;padding:12px 14px;border-right:1px solid var(--border)}
+  #fleet-root .cash-summary-cell:last-child {border-right:none}
+  #fleet-root .cash-summary-cell .csc-label {font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;font-weight:600}
+  #fleet-root .cash-summary-cell .csc-val {font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700}
+
+  @media(max-width:480px){
+    #fleet-root .cash-summary-strip {flex-wrap:wrap}
+    #fleet-root .cash-summary-cell {flex:1 1 48%;border-right:none;border-bottom:1px solid var(--border)}
+    #fleet-root .cash-summary-cell:nth-child(odd) {border-right:1px solid var(--border)}
+  }
+
+  #fleet-root .cash-entry-row {display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid #d3dff055;transition:background .15s}
+  #fleet-root .cash-entry-row:last-child {border-bottom:none}
+  #fleet-root .cash-entry-row:hover {background:#0b1d3a06}
+  #fleet-root .cash-date-col {width:46px;flex-shrink:0;text-align:center}
+  #fleet-root .cash-date-day {font-size:18px;font-weight:800;color:var(--accent);line-height:1;font-family:'JetBrains Mono',monospace}
+  #fleet-root .cash-date-mon {font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  #fleet-root .cash-body {flex:1;min-width:0}
+  #fleet-root .cash-type-badge {display:inline-flex;align-items:center;padding:2px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.3px;margin-bottom:4px}
+  #fleet-root .cash-note {font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;word-break:break-word}
+  #fleet-root .cash-amt {font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;white-space:nowrap;color:#06b6d4}
+  #fleet-root .cash-running {font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px;text-align:right}
+
+  #fleet-root .cash-amt-col {text-align:right;flex-shrink:0;min-width:80px}
+
+  #fleet-root .btn-cash-save {width:100%;padding:13px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:#06b6d4;color:#000;transition:opacity .2s,transform .1s;margin-top:6px}
+  #fleet-root .btn-cash-save:active {transform:scale(.98)}
+  #fleet-root .btn-cash-save:disabled {opacity:.5}
+  #fleet-root .cash-empty {text-align:center;color:var(--muted);padding:40px 0;font-size:13px}
+  #fleet-root .salary-box {background:var(--surface);border:1px solid #06b6d422;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  #fleet-root .salary-box .sb-label {font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  #fleet-root .salary-box .sb-note {font-size:11px;color:var(--muted);margin-top:2px}
+
+  @media(max-width:540px){
+    #fleet-root .header-brand h1 {font-size:17px}
+    #fleet-root .tab-btn {padding:10px 8px;font-size:11px}
+    #fleet-root .stat-card .sval {font-size:16px}
+    #fleet-root .exp-name {width:100px}
+    #fleet-root th, #fleet-root td {padding:8px;font-size:11px}
+    #fleet-root .compare-grid {grid-template-columns:1fr}
+    #fleet-root .cash-entry-row {padding:10px 12px;gap:8px}
+    #fleet-root .cash-form-card {position:static}
+  }
+
+  /* ── User badge in header ── */
+  #fleet-root .user-badge {display:flex;align-items:center;gap:8px}
+  #fleet-root .user-email {font-size:10px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fleet-root .btn-logout {padding:5px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+  #fleet-root .btn-logout:hover {border-color:var(--red);color:var(--red)}
+
+  /* ══ SETTLE DRIVER TAB STYLES ══ */
+  #fleet-root .stl-wrap {display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+  @media(max-width:720px){.stl-wrap{grid-template-columns:1fr}}
+  #fleet-root .stl-panel {background:var(--card);border:1px solid #1c448033;border-radius:14px;padding:20px;position:sticky;top:80px}
+  #fleet-root .stl-panel-title {font-size:10px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:16px}
+  #fleet-root .stl-chk-section-label {font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin:14px 0 7px}
+  #fleet-root .stl-chk-list {display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+  #fleet-root .stl-chk-item {display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:7px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:background .13s,border-color .13s;user-select:none}
+  #fleet-root .stl-chk-item:hover {background:#0b1d3a0c}
+  #fleet-root .stl-chk-item.is-checked {border-color:#1c448033;background:var(--accent-dim)}
+  #fleet-root .stl-chk-item.is-cash.is-checked {border-color:#06b6d433;background:#06b6d412}
+  #fleet-root .stl-chk-box {width:15px;height:15px;border-radius:4px;flex-shrink:0;border:1.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;transition:all .13s}
+  #fleet-root .stl-chk-item.is-checked .stl-chk-box {background:var(--accent);border-color:var(--accent);color:#000}
+  #fleet-root .stl-chk-item.is-cash.is-checked .stl-chk-box {background:#06b6d4;border-color:#06b6d4;color:#000}
+  #fleet-root .stl-chk-name {font-size:12px;font-weight:600;flex:1}
+  #fleet-root .stl-chk-hint {font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+  #fleet-root .stl-chk-item.is-checked .stl-chk-hint {color:var(--accent)}
+  #fleet-root .stl-chk-item.is-cash.is-checked .stl-chk-hint {color:#06b6d4}
+  #fleet-root .stl-div {height:1px;background:var(--border);margin:14px 0}
+  #fleet-root .stl-run-btn {width:100%;padding:13px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:var(--accent);color:#fff;letter-spacing:.3px;margin-top:14px;transition:opacity .2s,transform .1s}
+  #fleet-root .stl-run-btn:active {transform:scale(.98)}
+  #fleet-root .stl-run-btn:disabled {opacity:.45;cursor:default}
+  #fleet-root .stl-result {display:none}
+  #fleet-root .stl-result.on {display:block}
+  #fleet-root .stl-verdict {border-radius:16px;padding:30px 24px 24px;margin-bottom:18px;text-align:center;border:1px solid;position:relative;overflow:hidden}
+  #fleet-root .stl-verdict::before {content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,var(--vglow,#1c448010) 0%,transparent 70%);pointer-events:none}
+  #fleet-root .stl-verdict.pos {border-color:#ef444444;--vglow:#ef444418}
+  #fleet-root .stl-verdict.neg {border-color:#22c55e44;--vglow:#22c55e18}
+  #fleet-root .stl-verdict.zero {border-color:var(--border);--vglow:#0b1d3a0a}
+  #fleet-root .stl-v-icon {font-size:32px;margin-bottom:8px}
+  #fleet-root .stl-v-tag {display:inline-flex;align-items:center;padding:3px 12px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-bottom:10px}
+  #fleet-root .stl-verdict.pos .stl-v-tag {background:#ef444422;color:var(--red);border:1px solid #ef444444}
+  #fleet-root .stl-verdict.neg .stl-v-tag {background:#22c55e18;color:var(--green);border:1px solid #22c55e44}
+  #fleet-root .stl-verdict.zero .stl-v-tag {background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+  #fleet-root .stl-v-amt {font-family:'JetBrains Mono',monospace;font-size:46px;font-weight:800;line-height:1;margin-bottom:6px}
+  #fleet-root .stl-verdict.pos .stl-v-amt {color:var(--red)}
+  #fleet-root .stl-verdict.neg .stl-v-amt {color:var(--green)}
+  #fleet-root .stl-verdict.zero .stl-v-amt {color:var(--muted)}
+  #fleet-root .stl-v-action {font-size:14px;font-weight:700;margin-bottom:6px}
+  #fleet-root .stl-verdict.pos .stl-v-action {color:var(--red)}
+  #fleet-root .stl-verdict.neg .stl-v-action {color:var(--green)}
+  #fleet-root .stl-verdict.zero .stl-v-action {color:var(--muted)}
+  #fleet-root .stl-v-sub {font-size:11px;color:var(--muted);line-height:1.7;max-width:380px;margin:0 auto}
+  #fleet-root .stl-eq-bar {background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;margin-bottom:18px}
+  #fleet-root .stl-eq-chip {display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+  #fleet-root .stl-eq-op {font-size:18px;color:var(--muted);font-weight:300}
+  #fleet-root .stl-eq-eq {font-size:18px;color:var(--accent);font-weight:700}
+  #fleet-root .stl-cols {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  @media(max-width:480px){.stl-cols{grid-template-columns:1fr}}
+  #fleet-root .stl-col-card {background:var(--card);border-radius:12px;padding:14px 16px;border:1px solid}
+  #fleet-root .stl-col-card.exp-col {border-color:#ef444433}
+  #fleet-root .stl-col-card.cash-col {border-color:#06b6d433}
+  #fleet-root .stl-col-hdr {font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:10px}
+  #fleet-root .stl-col-card.exp-col .stl-col-hdr {color:var(--red)}
+  #fleet-root .stl-col-card.cash-col .stl-col-hdr {color:#06b6d4}
+  #fleet-root .stl-col-line {display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #d3dff055;font-size:12px}
+  #fleet-root .stl-col-line:last-of-type {border-bottom:none}
+  #fleet-root .stl-col-line-name {color:var(--muted)}
+  #fleet-root .stl-col-line-amt {font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600}
+  #fleet-root .exp-col .stl-col-line-amt {color:var(--red)}
+  #fleet-root .cash-col .stl-col-line-amt {color:#06b6d4}
+  #fleet-root .stl-col-total {display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+  #fleet-root .stl-col-total-label {font-size:10px;font-weight:700;color:var(--text)}
+  #fleet-root .stl-col-total-amt {font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:800}
+  #fleet-root .exp-col .stl-col-total-amt {color:var(--red)}
+  #fleet-root .cash-col .stl-col-total-amt {color:#06b6d4}
+  #fleet-root .stl-ledger {background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  #fleet-root .stl-ledger-hdr {padding:11px 16px;background:var(--surface);border-bottom:1px solid var(--border);font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  #fleet-root .stl-ledger-hdr span {color:var(--text);font-size:11px;letter-spacing:0;text-transform:none}
+  #fleet-root .stl-l-row {display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #d3dff044;font-size:12px;transition:background .1s}
+  #fleet-root .stl-l-row:last-child {border-bottom:none}
+  #fleet-root .stl-l-row:hover {background:#0b1d3a06}
+  #fleet-root .stl-l-date {width:50px;flex-shrink:0;color:var(--accent);font-weight:700;font-size:11px}
+  #fleet-root .stl-l-badge {display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;flex-shrink:0;white-space:nowrap}
+  #fleet-root .stl-l-badge.exp {background:var(--red-dim);color:var(--red);border:1px solid #ef444433}
+  #fleet-root .stl-l-badge.cash {background:#06b6d418;color:#06b6d4;border:1px solid #06b6d433}
+  #fleet-root .stl-l-note {flex:1;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #fleet-root .stl-l-amt {font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap;font-size:12px}
+  #fleet-root .stl-l-amt.exp {color:var(--red)}
+  #fleet-root .stl-l-amt.cash {color:#06b6d4}
+
+  /* ══ TRIPS TAB — Entry Form ══ */
+  #fleet-root .trips-layout {display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
+  @media(max-width:700px){.trips-layout{grid-template-columns:1fr}}
+
+  #fleet-root .trips-form-card {background:var(--card);border:1px solid #06b6d433;border-radius:14px;padding:22px;position:sticky;top:80px}
+  #fleet-root .trips-form-title {font-size:10px;color:#06b6d4;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  #fleet-root .trips-form-title::before {content:'🗺️'}
+
+  #fleet-root .btn-trip-save {width:100%;padding:13px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:#06b6d4;color:#000;transition:opacity .2s,transform .1s;margin-top:6px}
+  #fleet-root .btn-trip-save:active {transform:scale(.98)}
+  #fleet-root .btn-trip-save:disabled {opacity:.5}
+
+  #fleet-root .trip-inline-pill {display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:#06b6d412;color:#06b6d4;border:1px solid #06b6d433;white-space:nowrap}
+
+  #fleet-root .trip-del-btn {padding:3px 8px;border-radius:4px;border:1px solid #ef444433;background:transparent;color:var(--red);font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;transition:background .15s}
+  #fleet-root .trip-del-btn:hover {background:var(--red-dim)}
+
+  /* ══ DAY ENTRY — horizontal batch table ══ */
+  #fleet-root .batch-wrap {overflow-x:auto;padding-bottom:4px}
+  #fleet-root .batch-grid {display:grid;grid-template-columns:32px 130px 150px 130px 1fr 34px;gap:8px 10px;min-width:760px;align-items:center}
+  #fleet-root .batch-head {font-size:9px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  #fleet-root .batch-num {font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-align:center}
+  #fleet-root .batch-cell {min-width:0}
+  #fleet-root .batch-input, #fleet-root .batch-select {width:100%;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:7px;color:var(--text);padding:9px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;box-shadow:inset 0 1px 3px #00000022}
+  #fleet-root .batch-input:focus, #fleet-root .batch-select:focus {border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+  #fleet-root .batch-select option {background:#ffffff}
+  #fleet-root .batch-dash {color:var(--muted);text-align:center;font-family:'JetBrains Mono',monospace}
+  #fleet-root .batch-row-remove {width:30px;height:30px;border-radius:7px;border:1px solid #ef444433;background:transparent;color:var(--red);cursor:pointer;font-size:13px;transition:background .15s}
+  #fleet-root .batch-row-remove:hover {background:var(--red-dim)}
+  #fleet-root .batch-row-remove:disabled {opacity:.35;cursor:default}
+  #fleet-root .batch-status-row {grid-column:1 / -1;font-size:11px;padding:0 0 6px 42px;margin-top:-4px}
+  #fleet-root .batch-status-row.saving {color:var(--muted)}
+  #fleet-root .batch-status-row.error {color:var(--red)}
+  #fleet-root .batch-type-earning .batch-select {border-color:#22c55e55}
+  #fleet-root .batch-type-expense .batch-select {border-color:#ef444455}
+  #fleet-root .batch-type-cash .batch-select {border-color:#06b6d455}
+  #fleet-root .btn-add-row {padding:10px 18px;border-radius:8px;border:1.5px dashed var(--input-border);background:transparent;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:14px}
+  #fleet-root .btn-add-row:hover {border-color:var(--accent);color:var(--accent)}
+  @media(max-width:700px){
+    #fleet-root .batch-grid {grid-template-columns:28px 110px 130px 110px 220px 34px}
+  }
+
+  /* ══ COMPARE MONTHS — delta rows ══ */
+  #fleet-root .cmp-delta-row {display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap}
+  #fleet-root .cmp-delta-row:last-child {border-bottom:none}
+  #fleet-root .cmp-delta-label {display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 110px}
+  #fleet-root .cmp-delta-dot {width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  #fleet-root .cmp-delta-name {font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #fleet-root .cmp-delta-values {display:flex;align-items:center;gap:12px;flex-shrink:0}
+  #fleet-root .cmp-delta-sub {font-size:11px;color:var(--muted);white-space:nowrap}
+  #fleet-root .cmp-delta-amt {font-size:13px;font-weight:700;min-width:90px;text-align:right;white-space:nowrap}
+  @media(max-width:480px){
+    #fleet-root .cmp-delta-row {flex-direction:column;align-items:flex-start;gap:5px;padding:11px 0}
+    #fleet-root .cmp-delta-label {flex-basis:100%}
+    #fleet-root .cmp-delta-name {white-space:normal;overflow:visible;text-overflow:clip}
+    #fleet-root .cmp-delta-values {width:100%;justify-content:space-between}
+  }
+
+
+/* ══ INVOICE-THEME OVERRIDES (merged app) ══ */
+#fleet-root {
+  --bg: transparent;
+  --surface: #f2f6fd;
+  --card: #ffffff;
+  --border: #d3dff0;
+  --accent: #1c4480;
+  --accent-dim: #1c448014;
+  --muted: #6b82a8;
+  --text: #0b1d3a;
+  --input-bg: #ffffff;
+  --input-border: #c3d2e8;
+  --green-dim: #22c55e1a;
+  --red-dim: #ef44441a;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text);
+  font-size: 14px;
+}
+#fleet-root .section-card,
+#fleet-root .stat-card,
+#fleet-root .day-card,
+#fleet-root .chart-wrap,
+#fleet-root .compare-card,
+#fleet-root .cash-ledger,
+#fleet-root .stl-ledger { box-shadow: 0 2px 8px rgba(11,29,58,.08); }

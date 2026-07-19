@@ -1,0 +1,100 @@
+/* ══ BUSINESS SUMMARY — clean, airy, red/green at a glance ══ */
+.bsum {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--ink, #0b1d3a);
+  line-height: 1.65;
+}
+.bsum .pos { color: #16a34a; }
+.bsum .neg { color: #dc2626; }
+
+/* ── header ── */
+.bsum-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.bsum-title { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; }
+.bsum-sub { font-size: .85rem; color: var(--muted, #6b82a8); }
+.bsum-pickers { display: flex; gap: 8px; }
+.bsum-pickers select {
+  padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border, #d3dff0);
+  background: #fff; font-family: inherit; font-size: .85rem; color: inherit; cursor: pointer;
+}
+
+.bsum-note {
+  background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
+  border-radius: 12px; padding: 12px 16px; font-size: .85rem; margin-bottom: 20px;
+}
+.bsum-loading, .bsum-empty { color: var(--muted, #6b82a8); padding: 24px 0; }
+.bsum-error { color: #dc2626; padding: 16px 0; }
+
+/* ── headline verdict ── */
+.bsum-verdict {
+  font-size: 1.05rem; font-weight: 600; line-height: 1.7;
+  background: #fff; border: 1px solid var(--border, #d3dff0);
+  border-left: 5px solid var(--muted, #6b82a8);
+  border-radius: 12px; padding: 18px 22px; margin-bottom: 26px;
+}
+.bsum-verdict.up   { border-left-color: #16a34a; }
+.bsum-verdict.down { border-left-color: #dc2626; }
+
+/* ── lane cards ── */
+.bsum-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-bottom: 26px;
+}
+.bsum-card {
+  background: #fff; border: 1px solid var(--border, #d3dff0); border-radius: 14px;
+  padding: 18px 20px; box-shadow: 0 2px 8px rgba(11,29,58,.06);
+}
+.bsum-card.bold { border-width: 2px; }
+.bsum-card-title { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted, #6b82a8); margin-bottom: 10px; }
+.bsum-card-value { font-size: 1.45rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+.bsum-card-prev { font-size: .78rem; color: var(--muted, #6b82a8); margin-bottom: 12px; }
+.bsum-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .8rem; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+  background: #f2f6fd; color: var(--muted, #6b82a8);
+}
+.bsum-chip.pos { background: #16a34a14; }
+.bsum-chip.neg { background: #dc262614; }
+.bsum-chip-pct { font-weight: 500; opacity: .8; }
+
+/* ── billed vs logged gap ── */
+.bsum-gap {
+  background: #f2f6fd; border: 1px solid var(--border, #d3dff0); border-radius: 12px;
+  padding: 14px 18px; font-size: .9rem; margin-bottom: 34px;
+}
+
+/* ── why it moved ── */
+.bsum-h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 16px; }
+.bsum-block {
+  background: #fff; border: 1px solid var(--border, #d3dff0); border-radius: 14px;
+  padding: 8px 0; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(11,29,58,.06);
+}
+.bsum-block-title { font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 14px 22px 8px; }
+
+.bsum-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 15px 22px; border-top: 1px solid #eef3fb;
+}
+.bsum-row-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.bsum-row-label { font-weight: 600; font-size: .95rem; }
+.bsum-row-lane { font-size: .72rem; color: var(--muted, #6b82a8); letter-spacing: .04em; text-transform: uppercase; }
+.bsum-row-side { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+.bsum-row-detail { font-size: .78rem; color: var(--muted, #6b82a8); }
+.bsum-row-delta { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .95rem; }
+
+/* ── vehicle callouts ── */
+.bsum-vehicles { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 26px; }
+.bsum-veh {
+  background: #fff; border: 1px solid var(--border, #d3dff0); border-radius: 12px;
+  padding: 13px 18px; font-size: .9rem;
+}
+
+.bsum-foot { font-size: .76rem; color: var(--muted, #6b82a8); margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .bsum { padding: 20px 14px 70px; }
+  .bsum-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .bsum-row-side { width: 100%; justify-content: space-between; }
+}

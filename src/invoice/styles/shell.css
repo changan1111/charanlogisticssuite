@@ -1,0 +1,153 @@
+/* ═══════════════════════════════════════════════
+   SHELL LAYOUT — top bar + sidebar + content area
+   Loaded AFTER fleet/styles/app.css and invoice/styles/global.css
+   ═══════════════════════════════════════════════ */
+
+body { background: var(--pale); color: var(--ink); font-family: 'Outfit', sans-serif; }
+
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Body row: sidebar + main ── */
+.app-body-row { display: flex; flex: 1; min-height: 0; }
+.app-main { flex: 1; min-width: 0; }
+
+/* ── Sidebar ── */
+.app-sidebar {
+  width: 250px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0;
+}
+.sb-brand { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+.sb-brand-title { font-weight: 700; color: var(--ink); font-size: 14px; }
+.sb-brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sb-scroll { flex: 1; overflow-y: auto; padding: 10px 8px; }
+.sb-section-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  background: transparent; border: none; padding: 10px 10px; border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; color: var(--navy);
+  cursor: pointer; margin-top: 6px;
+}
+.sb-section-btn:hover { background: var(--ice); }
+.sb-caret { color: var(--muted); font-size: 11px; }
+.sb-sub { display: flex; flex-direction: column; padding: 2px 0 6px 6px; }
+.sb-sub-btn {
+  display: block; text-decoration: none; color: var(--muted); font-size: 12.5px;
+  padding: 8px 10px; border-radius: 7px; margin: 1px 0; transition: background .15s, color .15s;
+}
+.sb-sub-btn:hover { background: var(--ice); color: var(--ink); }
+.sb-sub-btn.active { background: var(--sky); color: #fff; font-weight: 600; }
+.sb-footer { border-top: 1px solid var(--border); padding: 12px 14px; }
+.sb-user { font-size: 11px; color: var(--muted); margin-bottom: 8px; word-break: break-all; }
+.sb-signout {
+  width: 100%; background: transparent; border: 1.5px solid var(--over-tx); color: var(--over-tx);
+  border-radius: 8px; padding: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 12.5px;
+  cursor: pointer;
+}
+.sb-signout:hover { background: var(--over-bg); }
+
+.sb-overlay { display: none; }
+
+@media (max-width: 860px) {
+  .app-sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh;
+    transform: translateX(-100%); transition: transform .22s ease; z-index: 300;
+  }
+  .app-sidebar.open { transform: translateX(0); box-shadow: var(--sh-lg); }
+  .sb-overlay.show {
+    display: block; position: fixed; inset: 0; background: rgba(11,29,58,.35); z-index: 250;
+  }
+}
+@media (min-width: 861px) {
+  .app-hamburger { display: none; }
+}
+
+/* ═══════════════════════════════════════════════
+   FLEET LIGHT-THEME BRIDGE
+   The Fleet pages were built with dark-theme CSS variables
+   (--bg, --text, --accent, --card, etc). Rather than touch every
+   fleet component, we redefine those variables — scoped to #fleet-root —
+   to the exact hex values Invoicing already uses, so both sections
+   share one visual language with zero changes to fleet page logic.
+   ═══════════════════════════════════════════════ */
+#fleet-root {
+  --bg: #f2f6fd;            /* invoice --pale */
+  --surface: #ffffff;       /* invoice --white */
+  --card: #ffffff;
+  --border: #d3dff0;        /* invoice --border */
+  --accent: #3b82c4;        /* invoice --sky */
+  --accent-dim: #3b82c422;
+  --green: #0a7a4b;         /* invoice --paid-tx */
+  --green-dim: #0a7a4b1f;
+  --red: #c0282e;           /* invoice --over-tx */
+  --red-dim: #c0282e1f;
+  --muted: #6b82a8;         /* invoice --muted */
+  --text: #0b1d3a;          /* invoice --ink */
+  --kaira: #c9a84c; --jit: #3b82c4; --lm: #0a7a4b; --other: #7c5cbf;
+  --input-bg: #ffffff;
+  --input-border: #d3dff0;
+  color-scheme: light;
+}
+#fleet-root, #fleet-root * { font-family: 'Outfit', sans-serif; }
+#fleet-root .mono, #fleet-root .mono * { font-family: 'JetBrains Mono', monospace; }
+#fleet-root .main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 60px; }
+#fleet-root, #fleet-root .page { background: transparent; }
+
+/* Invoice section container just needs normal page padding under the shared topbar */
+#invoice-root .content-area { padding-top: 4px; }
+
+/* Invoicing's own top bar (search/settings/refresh/reminders) now sits
+   nested below the shared app topbar instead of at the very top of the page. */
+#invoice-root .nav { position: sticky; top: 53px; z-index: 150; }
+@media (max-width: 860px) {
+  #invoice-root .nav { top: 53px; }
+}
+
+
+/* ── Banner ── */
+.header-banner img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+
+/* Sidebar drawer sits above the sticky section navs on mobile */
+@media (max-width: 860px) {
+  .app-sidebar { z-index: 400; }
+  .sb-overlay.show { z-index: 350; }
+}
+
+/* The old mobile bottom tab bar is gone — reclaim its reserved space */
+@media (max-width: 768px) {
+  .content-area { padding-bottom: 20px !important; }
+  #qic-fab { bottom: 20px !important; }
+}
+
+
+/* ══ Floating controls (replace the old dark section bars) ══ */
+
+/* Reminders bell — pinned top-right, unaffected by scrolling */
+.float-bell-wrap { position: fixed; top: 12px; right: 14px; z-index: 380; }
+.float-bell {
+  position: relative; width: 44px; height: 44px; border-radius: 12px;
+  background: #fff; border: 1px solid var(--border); cursor: pointer;
+  font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--sh-md); transition: transform .15s, box-shadow .15s;
+}
+.float-bell:hover, .float-bell.active { transform: translateY(-1px); box-shadow: var(--sh-lg); }
+.float-bell-count {
+  position: absolute; top: -6px; right: -6px; min-width: 19px; height: 19px;
+  border-radius: 999px; background: #f59e0b; color: #fff; border: 1.5px solid #fff;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; font-family: 'Outfit', sans-serif;
+}
+.float-bell-dropdown {
+  position: absolute; top: 52px; right: 0; width: min(340px, calc(100vw - 28px));
+  background: #fff; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--sh-lg); overflow: hidden; max-height: 70vh; overflow-y: auto;
+}
+
+/* Menu button — mobile drawer toggle, pinned top-left */
+.float-burger {
+  display: none; position: fixed; top: 12px; left: 14px; z-index: 380;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--ink); color: #fff; border: none; cursor: pointer;
+  font-size: 18px; box-shadow: var(--sh-md);
+}
+@media (max-width: 860px) {
+  .float-burger { display: flex; align-items: center; justify-content: center; }
+}
