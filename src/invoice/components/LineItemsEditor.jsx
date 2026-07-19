@@ -63,16 +63,16 @@ export default function LineItemsEditor({ value, onChange }) {
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
-        <table className="qt-items-table" style={{ minWidth: 580 }}>
+        <table className="qt-items-table" style={{ minWidth: 620, tableLayout: 'fixed' }}>
           <thead>
             <tr>
-              <th style={{ width: 36 }}>#</th>
-              <th>Date</th>
+              <th style={{ width: 34 }}>#</th>
+              <th style={{ width: 148 }}>Date</th>
               <th>Description <span style={{ color: '#f0d080' }}>*</span></th>
-              <th style={{ width: 70, textAlign: 'center' }}>Qty <span style={{ color: '#f0d080' }}>*</span></th>
-              <th style={{ width: 120, textAlign: 'right' }}>Rate (S$) <span style={{ color: '#f0d080' }}>*</span></th>
-              <th style={{ width: 120, textAlign: 'right' }}>Amount (S$)</th>
-              <th style={{ width: 36 }}></th>
+              <th style={{ width: 64, textAlign: 'center' }}>Qty <span style={{ color: '#f0d080' }}>*</span></th>
+              <th style={{ width: 112, textAlign: 'right' }}>Rate (S$) <span style={{ color: '#f0d080' }}>*</span></th>
+              <th style={{ width: 108, textAlign: 'right' }}>Amount (S$)</th>
+              <th style={{ width: 32 }}></th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +81,7 @@ export default function LineItemsEditor({ value, onChange }) {
               return (
                 <tr key={r.id}>
                   <td style={{ textAlign: 'center', color: '#7a6e58', fontWeight: 600, fontSize: '.82rem' }}>{i + 1}</td>
-                  <td><input type="date" value={r.date} onChange={e => update(r.id, 'date', e.target.value)} style={{ minWidth: 130 }} /></td>
+                  <td><input type="date" value={r.date} onChange={e => update(r.id, 'date', e.target.value)} style={{ width: 138, minWidth: 138 }} /></td>
                   <td style={{ verticalAlign: 'top', padding: '4px' }}>
                     <textarea
                       placeholder="Description (Enter = new line)"
@@ -110,8 +110,8 @@ export default function LineItemsEditor({ value, onChange }) {
                       ref={el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px' } }}
                     />
                   </td>
-                  <td><input type="number" placeholder="1" value={r.qty} min="1" step="1" onChange={e => update(r.id, 'qty', e.target.value)} style={{ textAlign: 'center' }} /></td>
-                  <td><input type="number" placeholder="0.00" value={r.rate} step="0.01" onChange={e => update(r.id, 'rate', e.target.value)} style={{ textAlign: 'right' }} /></td>
+                  <td><input type="number" placeholder="1" value={r.qty} min="1" step="1" onChange={e => update(r.id, 'qty', e.target.value)} style={{ textAlign: 'center', minWidth: 48 }} /></td>
+                  <td><input type="number" placeholder="0.00" value={r.rate} step="0.01" onChange={e => update(r.id, 'rate', e.target.value)} style={{ textAlign: 'right', minWidth: 92 }} /></td>
                   <td style={{ textAlign: 'right', fontWeight: 600, fontSize: '.85rem', color: amt < 0 ? '#c0282e' : 'var(--ink)' }}>S$ {fmt(amt)}</td>
                   <td><button className="qt-del-btn" onClick={() => delRow(r.id)} title="Remove row">✕</button></td>
                 </tr>

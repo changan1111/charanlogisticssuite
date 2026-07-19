@@ -242,7 +242,7 @@
 
   /* ══ SETTLE DRIVER TAB STYLES ══ */
   #fleet-root .stl-wrap {display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
-  @media(max-width:720px){.stl-wrap{grid-template-columns:1fr}}
+  @media(max-width:720px){#fleet-root .stl-wrap{grid-template-columns:1fr} #fleet-root .stl-panel{position:static}}
   #fleet-root .stl-panel {background:var(--card);border:1px solid #1c448033;border-radius:14px;padding:20px;position:sticky;top:80px}
   #fleet-root .stl-panel-title {font-size:10px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:16px}
   #fleet-root .stl-chk-section-label {font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin:14px 0 7px}
@@ -288,7 +288,7 @@
   #fleet-root .stl-eq-op {font-size:18px;color:var(--muted);font-weight:300}
   #fleet-root .stl-eq-eq {font-size:18px;color:var(--accent);font-weight:700}
   #fleet-root .stl-cols {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
-  @media(max-width:480px){.stl-cols{grid-template-columns:1fr}}
+  @media(max-width:480px){#fleet-root .stl-cols{grid-template-columns:1fr}}
   #fleet-root .stl-col-card {background:var(--card);border-radius:12px;padding:14px 16px;border:1px solid}
   #fleet-root .stl-col-card.exp-col {border-color:#ef444433}
   #fleet-root .stl-col-card.cash-col {border-color:#06b6d433}
@@ -323,7 +323,7 @@
 
   /* ══ TRIPS TAB — Entry Form ══ */
   #fleet-root .trips-layout {display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
-  @media(max-width:700px){.trips-layout{grid-template-columns:1fr}}
+  @media(max-width:700px){#fleet-root .trips-layout{grid-template-columns:1fr} #fleet-root .trips-form-card{position:static}}
 
   #fleet-root .trips-form-card {background:var(--card);border:1px solid #06b6d433;border-radius:14px;padding:22px;position:sticky;top:80px}
   #fleet-root .trips-form-title {font-size:10px;color:#06b6d4;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
