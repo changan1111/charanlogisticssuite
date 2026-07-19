@@ -82,7 +82,7 @@ export default function LineItemsEditor({ value, onChange }) {
                 <tr key={r.id}>
                   <td style={{ textAlign: 'center', color: '#7a6e58', fontWeight: 600, fontSize: '.82rem' }}>{i + 1}</td>
                   <td><input type="date" value={r.date} onChange={e => update(r.id, 'date', e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} /></td>
-                  <td style={{ verticalAlign: 'top', padding: '4px' }}>
+                  <td style={{ verticalAlign: 'middle', padding: '4px 6px' }}>
                     <textarea
                       placeholder="Description (Enter = new line)"
                       value={r.desc}
@@ -90,6 +90,7 @@ export default function LineItemsEditor({ value, onChange }) {
                       onChange={e => update(r.id, 'desc', e.target.value, e.target)}
                       onKeyDown={e => handleDescKeyDown(e, r.id)}
                       style={{
+                        display: 'block',
                         resize: 'none',
                         overflow: 'hidden',
                         minHeight: 34,
