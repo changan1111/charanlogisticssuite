@@ -75,10 +75,10 @@
 
 .bsum-row {
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  padding: 15px 22px; border-top: 1px solid #eef3fb;
+  padding: 19px 22px; border-top: 1px solid #eef3fb; line-height: 1.7;
 }
 .bsum-row-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.bsum-row-label { font-weight: 600; font-size: .95rem; }
+.bsum-row-label { font-weight: 600; font-size: .97rem; }
 .bsum-row-lane { font-size: .72rem; color: var(--muted, #6b82a8); letter-spacing: .04em; text-transform: uppercase; }
 .bsum-row-side { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
 .bsum-row-detail { font-size: .78rem; color: var(--muted, #6b82a8); }
@@ -98,3 +98,26 @@
   .bsum-row { flex-direction: column; align-items: flex-start; gap: 8px; }
   .bsum-row-side { width: 100%; justify-content: space-between; }
 }
+
+
+/* ── perspective tabs ── */
+.bsum-tabs { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+.bsum-tab {
+  padding: 10px 20px; border-radius: 999px; border: 1px solid var(--border, #d3dff0);
+  background: #fff; font-family: inherit; font-size: .88rem; font-weight: 600;
+  color: var(--muted, #6b82a8); cursor: pointer; transition: all .15s;
+}
+.bsum-tab:hover { border-color: var(--ink, #0b1d3a); color: var(--ink, #0b1d3a); }
+.bsum-tab.active { background: var(--ink, #0b1d3a); border-color: var(--ink, #0b1d3a); color: #fff; }
+
+.bsum .amb { color: #d97706; }
+.bsum-hint { font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--muted, #6b82a8); }
+
+/* invoicing status card */
+.bsum-status { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.bsum-status > div { display: flex; align-items: baseline; gap: 10px; line-height: 1.6; }
+.bsum-status span { font-size: .8rem; font-weight: 700; width: 92px; }
+.bsum-status b { font-family: 'JetBrains Mono', monospace; font-size: .9rem; }
+.bsum-status i { font-style: normal; font-size: .75rem; color: var(--muted, #6b82a8); }
+
+.bsum-empty.in-block { padding: 16px 22px; }

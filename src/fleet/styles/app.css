@@ -119,8 +119,8 @@
   /* ── Dashboard table ── */
   #fleet-root .dtable-wrap {overflow-x:auto}
   #fleet-root table {width:100%;border-collapse:collapse}
-  #fleet-root th {padding:10px 12px;font-size:10px;color:var(--muted);text-align:left;letter-spacing:.5px;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface)}
-  #fleet-root td {padding:11px 12px;font-size:12px;border-bottom:1px solid #d3dff044}
+  #fleet-root th {padding:12px 14px;font-size:10px;color:var(--muted);text-align:left;letter-spacing:.5px;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface)}
+  #fleet-root td {padding:16px 14px;font-size:12.5px;line-height:1.6;border-bottom:1px solid #d3dff066}
   #fleet-root tr:last-child td {border-bottom:none}
   #fleet-root tr:hover td {background:#0b1d3a08}
 
@@ -228,7 +228,7 @@
     #fleet-root .tab-btn {padding:10px 8px;font-size:11px}
     #fleet-root .stat-card .sval {font-size:16px}
     #fleet-root .exp-name {width:100px}
-    #fleet-root th, #fleet-root td {padding:8px;font-size:11px}
+    #fleet-root th, #fleet-root td {padding:12px 10px;font-size:11px}
     #fleet-root .compare-grid {grid-template-columns:1fr}
     #fleet-root .cash-entry-row {padding:10px 12px;gap:8px}
     #fleet-root .cash-form-card {position:static}
@@ -364,7 +364,7 @@
   }
 
   /* ══ COMPARE MONTHS — delta rows ══ */
-  #fleet-root .cmp-delta-row {display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap}
+  #fleet-root .cmp-delta-row {display:flex;justify-content:space-between;align-items:center;padding:16px 0;line-height:1.6;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap}
   #fleet-root .cmp-delta-row:last-child {border-bottom:none}
   #fleet-root .cmp-delta-label {display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 110px}
   #fleet-root .cmp-delta-dot {width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -373,7 +373,7 @@
   #fleet-root .cmp-delta-sub {font-size:11px;color:var(--muted);white-space:nowrap}
   #fleet-root .cmp-delta-amt {font-size:13px;font-weight:700;min-width:90px;text-align:right;white-space:nowrap}
   @media(max-width:480px){
-    #fleet-root .cmp-delta-row {flex-direction:column;align-items:flex-start;gap:5px;padding:11px 0}
+    #fleet-root .cmp-delta-row {flex-direction:column;align-items:flex-start;gap:8px;padding:15px 0}
     #fleet-root .cmp-delta-label {flex-basis:100%}
     #fleet-root .cmp-delta-name {white-space:normal;overflow:visible;text-overflow:clip}
     #fleet-root .cmp-delta-values {width:100%;justify-content:space-between}

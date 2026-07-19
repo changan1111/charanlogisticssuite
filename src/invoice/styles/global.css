@@ -439,9 +439,9 @@ body {
 .chart-tbl-wrap { overflow-x: auto; margin-top: 1.5rem; }
 .chart-tbl { width: 100%; border-collapse: collapse; font-size: .82rem; }
 .chart-tbl thead tr { background: var(--ink); }
-.chart-tbl thead th { padding: .6rem .9rem; color: rgba(255,255,255,.65); font-size: .67rem; text-transform: uppercase; letter-spacing: .09em; text-align: left; }
+.chart-tbl thead th { padding: .75rem .9rem; color: rgba(255,255,255,.65); font-size: .67rem; text-transform: uppercase; letter-spacing: .09em; text-align: left; }
 .chart-tbl thead th.r { text-align: right; }
-.chart-tbl tbody td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); }
+.chart-tbl tbody td { padding: 15px .9rem; line-height: 1.6; border-bottom: 1px solid var(--pborder); font-size: .84rem; }
 .chart-tbl tbody td.r { text-align: right; font-weight: 600; }
 .chart-tbl tbody tr:last-child td { border-bottom: none; }
 .chart-tbl tbody tr:hover td { background: var(--ice); }

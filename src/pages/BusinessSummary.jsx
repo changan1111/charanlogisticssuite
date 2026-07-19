@@ -6,11 +6,13 @@ import { detectClient } from '../fleet/lib/clientDetect'
 import '../styles/summary.css'
 
 // ═══════════════════════════════════════════════
-//  BUSINESS SUMMARY — invoicing + fleet in one view.
-//  Every figure is an exact sum of logged rows. The "why" lists are
-//  the actual biggest movers vs last month — nothing is estimated.
-//  Invoiced revenue and fleet earnings are shown side by side but
-//  never added together (they can describe the same jobs).
+//  BUSINESS SUMMARY — the one consolidated page.
+//  Three perspectives as tabs: Combined | Invoicing | Fleet.
+//  Every figure is an exact sum of logged rows; movement amounts are
+//  shown as IMPACT on the month, so green always = helped and
+//  red always = hurt (an expense increase shows as a red minus).
+//  Invoiced revenue and fleet earnings are never added together —
+//  they can describe the same jobs.
 // ═══════════════════════════════════════════════
 
 const now = new Date()
@@ -28,6 +30,7 @@ function parseYM(inv) {
 }
 const invTotal  = inv => parseFloat(inv.total_amount ?? inv.total ?? inv.amount ?? 0) || 0
 const invClient = inv => (inv.client_name ?? inv.name ?? 'Unknown').trim() || 'Unknown'
+const invStatus = inv => (['paid', 'pending', 'overdue'].includes(inv.status) ? inv.status : 'pending')
 
 const sum = rows => rows.reduce((s, r) => s + Number(r.amount), 0)
 const fmt = n => Number(n || 0).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -35,23 +38,13 @@ const signed = n => (n > 0 ? '+S$ ' : n < 0 ? '−S$ ' : 'S$ ') + fmt(Math.abs(n
 const pct = (prev, cur) => (prev ? ((cur - prev) / prev) * 100 : null) // null = no baseline, never guessed
 const prevOf = (m, y) => (m === 0 ? { m: 11, y: y - 1 } : { m: m - 1, y })
 
-function groupDelta(curRows, prevRows, keyFn) {
+function groupDelta(curRows, prevRows, keyFn, valFn) {
+  const val = valFn || (rows => sum(rows))
   const keys = new Set([...curRows.map(keyFn), ...prevRows.map(keyFn)])
   return [...keys].map(k => {
     const c = curRows.filter(r => keyFn(r) === k)
     const p = prevRows.filter(r => keyFn(r) === k)
-    return { key: k, cur: sum(c), prev: sum(p), delta: sum(c) - sum(p), curCount: c.length, prevCount: p.length }
-  }).filter(m => m.cur !== 0 || m.prev !== 0)
-}
-
-// invoice totals are not `amount`-shaped rows, so a dedicated grouper
-function groupInvDelta(curRows, prevRows) {
-  const keys = new Set([...curRows.map(invClient), ...prevRows.map(invClient)])
-  return [...keys].map(k => {
-    const c = curRows.filter(r => invClient(r) === k)
-    const p = prevRows.filter(r => invClient(r) === k)
-    const cur = c.reduce((s, r) => s + invTotal(r), 0)
-    const prev = p.reduce((s, r) => s + invTotal(r), 0)
+    const cur = val(c), prev = val(p)
     return { key: k, cur, prev, delta: cur - prev, curCount: c.length, prevCount: p.length }
   }).filter(m => m.cur !== 0 || m.prev !== 0)
 }
@@ -61,6 +54,7 @@ const fleetClientLabel = k => (CLIENT_CONFIG.find(c => c.key === k)?.label || k)
 export default function BusinessSummary() {
   const [month, setMonth] = useState(now.getMonth())
   const [year, setYear] = useState(now.getFullYear())
+  const [tab, setTab] = useState('combined')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [data, setData] = useState(null)
@@ -71,16 +65,12 @@ export default function BusinessSummary() {
       setLoading(true); setError('')
       try {
         const p = prevOf(month, year)
-
-        // fleet rows for both months (server-side month filter)
         const [curFE, curFX, prevFE, prevFX] = await Promise.all([
           getAllRows('earnings', month, year),
           getAllRows('expenses', month, year),
           getAllRows('earnings', p.m, p.y),
           getAllRows('expenses', p.m, p.y),
         ])
-
-        // all invoices (date formats vary, so filter client-side like InsightsPanel)
         let invoices = []
         let from = 0
         while (true) {
@@ -93,8 +83,7 @@ export default function BusinessSummary() {
         const inMonth = (inv, m, y) => { const d = parseYM(inv); return d && d.m === m && d.y === y }
         const curInv = invoices.filter(i => inMonth(i, month, year))
         const prevInv = invoices.filter(i => inMonth(i, p.m, p.y))
-
-        if (!cancelled) setData({ curFE, curFX, prevFE, prevFX, curInv, prevInv, p })
+        if (!cancelled) setData({ curFE, curFX, prevFE, prevFX, curInv, prevInv })
       } catch (e) {
         if (!cancelled) setError(e.message || String(e))
       }
@@ -107,54 +96,53 @@ export default function BusinessSummary() {
   const view = useMemo(() => {
     if (!data) return null
     const { curFE, curFX, prevFE, prevFX, curInv, prevInv } = data
+    const invSum = rows => rows.reduce((s, r) => s + invTotal(r), 0)
 
     const lanes = {
-      inv:  { cur: curInv.reduce((s, r) => s + invTotal(r), 0), prev: prevInv.reduce((s, r) => s + invTotal(r), 0) },
+      inv:  { cur: invSum(curInv), prev: invSum(prevInv) },
       earn: { cur: sum(curFE), prev: sum(prevFE) },
       exp:  { cur: sum(curFX), prev: sum(prevFX) },
     }
     lanes.net = { cur: lanes.earn.cur - lanes.exp.cur, prev: lanes.earn.prev - lanes.exp.prev }
     for (const l of Object.values(lanes)) { l.delta = l.cur - l.prev; l.pct = pct(l.prev, l.cur) }
 
-    // movers per lane
-    const invMoves   = groupInvDelta(curInv, prevInv)
-    const earnMoves  = groupDelta(curFE, prevFE, r => detectClient(r.note || '')).map(m => ({ ...m, label: fleetClientLabel(m.key) }))
-    const expMoves   = groupDelta(curFX, prevFX, r => r.expense_type || 'Other')
-    const vehMoves   = groupDelta(curFE, prevFE, r => r.vehicle || '?')
+    // ── movers, all expressed as IMPACT (green helps, red hurts) ──
+    const invMoves  = groupDelta(curInv, prevInv, invClient, invSum)
+      .map(m => ({ lane: 'Invoicing', label: m.key, impact: m.delta, detail: `${m.prevCount} → ${m.curCount} invoices` }))
+    const earnMoves = groupDelta(curFE, prevFE, r => detectClient(r.note || ''))
+      .map(m => ({ lane: 'Fleet earnings', label: fleetClientLabel(m.key), impact: m.delta, detail: `${m.prevCount} → ${m.curCount} jobs` }))
+    const expMoves  = groupDelta(curFX, prevFX, r => (r.expense_type || 'Other'))
+      .map(m => ({ lane: 'Fleet expense', label: `${m.key} — spend ${m.delta > 0 ? 'up' : 'down'}`, impact: -m.delta, detail: `${m.prevCount} → ${m.curCount} entries` }))
+    const vehMoves  = groupDelta(curFE, prevFE, r => r.vehicle || '?')
+      .map(m => ({ lane: 'Vehicle', label: m.key, impact: m.delta, detail: `${m.prevCount} → ${m.curCount} jobs` }))
 
-    // one combined "why" list, biggest impact first.
-    // good = green: revenue up, expense down. bad = red: revenue down, expense up.
-    const why = [
-      ...invMoves.map(m => ({ lane: 'Invoicing', label: m.key, delta: m.delta, good: m.delta > 0, detail: `${m.prevCount} → ${m.curCount} invoices` })),
-      ...earnMoves.map(m => ({ lane: 'Fleet earnings', label: m.label, delta: m.delta, good: m.delta > 0, detail: `${m.prevCount} → ${m.curCount} jobs` })),
-      ...expMoves.map(m => ({ lane: 'Fleet expense', label: m.key, delta: m.delta, good: m.delta < 0, detail: `${m.prevCount} → ${m.curCount} entries` })),
-    ].filter(m => Math.abs(m.delta) >= 1).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+    const bySize = arr => [...arr].filter(m => Math.abs(m.impact) >= 1).sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact))
+    const combined = bySize([...invMoves, ...earnMoves, ...expMoves])
+    const helped = combined.filter(m => m.impact > 0)
+    const hurt   = combined.filter(m => m.impact < 0)
 
-    const worstVehicle = [...vehMoves].sort((a, b) => a.delta - b.delta)[0]
-    const bestVehicle  = [...vehMoves].sort((a, b) => b.delta - a.delta)[0]
+    // status split for invoicing tab
+    const status = { paid: 0, pending: 0, overdue: 0 }
+    const statusCount = { paid: 0, pending: 0, overdue: 0 }
+    curInv.forEach(i => { const st = invStatus(i); status[st] += invTotal(i); statusCount[st] += 1 })
 
-    // deterministic headline built from the top movers
-    const good = why.filter(m => m.good)
-    const bad  = why.filter(m => !m.good)
+    // deterministic headline
     let headline
-    if (!why.length) {
-      headline = 'Nothing moved meaningfully vs last month.'
-    } else {
+    if (!combined.length) headline = 'Nothing moved meaningfully vs last month.'
+    else {
       const parts = []
-      if (lanes.net.delta < -1)      parts.push(`Fleet net is down ${signed(lanes.net.delta).replace('−S$', 'S$')}`)
-      else if (lanes.net.delta > 1)  parts.push(`Fleet net is up ${signed(lanes.net.delta).replace('+S$', 'S$')}`)
-      if (lanes.inv.delta < -1)      parts.push(`invoicing is down ${signed(lanes.inv.delta).replace('−S$', 'S$')}`)
-      else if (lanes.inv.delta > 1)  parts.push(`invoicing is up ${signed(lanes.inv.delta).replace('+S$', 'S$')}`)
-      const driver = bad[0] || good[0]
-      const driverTxt = driver
-        ? ` — biggest single factor: ${driver.label} (${driver.lane.toLowerCase()}) ${driver.delta > 0 ? 'up' : 'down'} ${signed(driver.delta).replace(/^[+−]/, '')}`
-        : ''
-      headline = (parts.join(' and ') || 'Broadly flat vs last month') + driverTxt + '.'
+      if (Math.abs(lanes.net.delta) > 1)
+        parts.push(`Fleet net is ${lanes.net.delta > 0 ? 'up' : 'down'} S$ ${fmt(Math.abs(lanes.net.delta))}`)
+      if (Math.abs(lanes.inv.delta) > 1)
+        parts.push(`invoicing is ${lanes.inv.delta > 0 ? 'up' : 'down'} S$ ${fmt(Math.abs(lanes.inv.delta))}`)
+      const top = combined[0]
+      headline = (parts.join(' and ') || 'Broadly flat vs last month')
+        + ` — biggest single factor: ${top.label} (${top.lane.toLowerCase()}) ${top.impact > 0 ? 'helped' : 'hurt'} by S$ ${fmt(Math.abs(top.impact))}.`
     }
 
     const unbilledGap = lanes.earn.cur - lanes.inv.cur
 
-    return { lanes, why, good, bad, worstVehicle, bestVehicle, headline, unbilledGap }
+    return { lanes, invMoves: bySize(invMoves), earnMoves: bySize(earnMoves), expMoves: bySize(expMoves), vehMoves: bySize(vehMoves), helped, hurt, headline, unbilledGap, status, statusCount, curInvCount: curInv.length, prevInvCount: prevInv.length }
   }, [data])
 
   const monthLabel = `${MONTHS[month]} ${year}`
@@ -167,7 +155,7 @@ export default function BusinessSummary() {
       <div className="bsum-head">
         <div>
           <h1 className="bsum-title">Business Summary</h1>
-          <div className="bsum-sub">{monthLabel} compared with {prevLabel} — invoicing and fleet together</div>
+          <div className="bsum-sub">{monthLabel} compared with {prevLabel}</div>
         </div>
         <div className="bsum-pickers">
           <select value={month} onChange={e => setMonth(+e.target.value)}>
@@ -179,21 +167,20 @@ export default function BusinessSummary() {
         </div>
       </div>
 
-      {isPartial && (
-        <div className="bsum-note">⚠️ {monthLabel} is still in progress — this is a partial-month comparison and figures will grow.</div>
-      )}
+      <div className="bsum-tabs">
+        {[['combined', '⚖ Combined'], ['invoicing', '🧾 Invoicing'], ['fleet', '🚚 Fleet']].map(([k, l]) => (
+          <button key={k} className={'bsum-tab' + (tab === k ? ' active' : '')} onClick={() => setTab(k)}>{l}</button>
+        ))}
+      </div>
 
+      {isPartial && <div className="bsum-note">⚠️ {monthLabel} is still in progress — figures will grow as the month is logged.</div>}
       {loading && <div className="bsum-loading">Adding up the month…</div>}
       {error && <div className="bsum-error">Could not load: {error}</div>}
 
-      {!loading && !error && view && (
+      {!loading && !error && view && tab === 'combined' && (
         <>
-          {/* ── Headline verdict ── */}
-          <div className={`bsum-verdict ${view.lanes.net.delta > 1 ? 'up' : view.lanes.net.delta < -1 ? 'down' : ''}`}>
-            {view.headline}
-          </div>
+          <div className={`bsum-verdict ${view.lanes.net.delta > 1 ? 'up' : view.lanes.net.delta < -1 ? 'down' : ''}`}>{view.headline}</div>
 
-          {/* ── The four lanes ── */}
           <div className="bsum-cards">
             <LaneCard title="Invoiced to clients" lane={view.lanes.inv} upIsGood />
             <LaneCard title="Fleet earnings (logged jobs)" lane={view.lanes.earn} upIsGood />
@@ -201,7 +188,6 @@ export default function BusinessSummary() {
             <LaneCard title="Fleet net profit" lane={view.lanes.net} upIsGood bold />
           </div>
 
-          {/* ── Billed vs logged ── */}
           <div className="bsum-gap">
             Jobs logged this month total <b>S$ {fmt(view.lanes.earn.cur)}</b>, invoiced <b>S$ {fmt(view.lanes.inv.cur)}</b>
             {Math.abs(view.unbilledGap) >= 1 && (
@@ -209,38 +195,79 @@ export default function BusinessSummary() {
             )}.
           </div>
 
-          {/* ── Why it moved ── */}
-          <h2 className="bsum-h2">Why it moved</h2>
-          {view.why.length === 0 && <div className="bsum-empty">No meaningful movement vs last month.</div>}
-
-          {view.bad.length > 0 && (
+          {view.hurt.length > 0 && (
             <div className="bsum-block">
-              <div className="bsum-block-title neg">▼ Pulling the month down</div>
-              {view.bad.slice(0, 6).map((m, i) => <WhyRow key={'b' + i} m={m} />)}
+              <div className="bsum-block-title neg">▼ What hurt the month</div>
+              {view.hurt.slice(0, 7).map((m, i) => <WhyRow key={'h' + i} m={m} />)}
             </div>
           )}
-
-          {view.good.length > 0 && (
+          {view.helped.length > 0 && (
             <div className="bsum-block">
-              <div className="bsum-block-title pos">▲ Lifting the month up</div>
-              {view.good.slice(0, 6).map((m, i) => <WhyRow key={'g' + i} m={m} />)}
+              <div className="bsum-block-title pos">▲ What helped the month</div>
+              {view.helped.slice(0, 7).map((m, i) => <WhyRow key={'g' + i} m={m} />)}
             </div>
           )}
-
-          {/* ── Vehicle callouts ── */}
-          {(view.worstVehicle || view.bestVehicle) && (
-            <div className="bsum-vehicles">
-              {view.bestVehicle && view.bestVehicle.delta > 1 && (
-                <div className="bsum-veh pos">🚛 Best mover: <b>{view.bestVehicle.key}</b> earnings {signed(view.bestVehicle.delta)}</div>
-              )}
-              {view.worstVehicle && view.worstVehicle.delta < -1 && (
-                <div className="bsum-veh neg">🚛 Biggest drop: <b>{view.worstVehicle.key}</b> earnings {signed(view.worstVehicle.delta)}</div>
-              )}
-            </div>
-          )}
-
-          <div className="bsum-foot">Every figure is an exact sum of logged entries — nothing here is estimated.</div>
+          {view.helped.length === 0 && view.hurt.length === 0 && <div className="bsum-empty">No meaningful movement vs last month.</div>}
         </>
+      )}
+
+      {!loading && !error && view && tab === 'invoicing' && (
+        <>
+          <div className="bsum-cards">
+            <LaneCard title={`Invoiced — ${monthLabel}`} lane={view.lanes.inv} upIsGood bold />
+            <div className="bsum-card">
+              <div className="bsum-card-title">Invoices raised</div>
+              <div className="bsum-card-value">{view.curInvCount}</div>
+              <div className="bsum-card-prev">last month {view.prevInvCount}</div>
+            </div>
+            <div className="bsum-card">
+              <div className="bsum-card-title">Status — {monthLabel}</div>
+              <div className="bsum-status">
+                <div><span className="pos">● Paid</span><b>S$ {fmt(view.status.paid)}</b><i>{view.statusCount.paid}</i></div>
+                <div><span className="amb">● Pending</span><b>S$ {fmt(view.status.pending)}</b><i>{view.statusCount.pending}</i></div>
+                <div><span className="neg">● Overdue</span><b>S$ {fmt(view.status.overdue)}</b><i>{view.statusCount.overdue}</i></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bsum-block">
+            <div className="bsum-block-title">Client billing vs {prevLabel}</div>
+            {view.invMoves.length === 0 && <div className="bsum-empty in-block">No invoices in either month.</div>}
+            {view.invMoves.map((m, i) => <WhyRow key={i} m={m} />)}
+          </div>
+        </>
+      )}
+
+      {!loading && !error && view && tab === 'fleet' && (
+        <>
+          <div className="bsum-cards">
+            <LaneCard title="Fleet earnings" lane={view.lanes.earn} upIsGood />
+            <LaneCard title="Fleet expenses" lane={view.lanes.exp} upIsGood={false} />
+            <LaneCard title="Net profit" lane={view.lanes.net} upIsGood bold />
+          </div>
+
+          <div className="bsum-block">
+            <div className="bsum-block-title">Earnings by job source vs {prevLabel}</div>
+            {view.earnMoves.length === 0 && <div className="bsum-empty in-block">No earnings entries in either month.</div>}
+            {view.earnMoves.map((m, i) => <WhyRow key={'e' + i} m={m} />)}
+          </div>
+
+          <div className="bsum-block">
+            <div className="bsum-block-title">Expenses by type vs {prevLabel} <span className="bsum-hint">(red = spent more)</span></div>
+            {view.expMoves.length === 0 && <div className="bsum-empty in-block">No expense entries in either month.</div>}
+            {view.expMoves.map((m, i) => <WhyRow key={'x' + i} m={m} />)}
+          </div>
+
+          <div className="bsum-block">
+            <div className="bsum-block-title">Earnings by vehicle vs {prevLabel}</div>
+            {view.vehMoves.length === 0 && <div className="bsum-empty in-block">No vehicle entries in either month.</div>}
+            {view.vehMoves.map((m, i) => <WhyRow key={'v' + i} m={m} />)}
+          </div>
+        </>
+      )}
+
+      {!loading && !error && view && (
+        <div className="bsum-foot">Every figure is an exact sum of logged entries — nothing is estimated. Amounts in the lists are the <b className="pos">impact</b> on the month: green helped, red hurt.</div>
       )}
     </div>
   )
@@ -272,7 +299,7 @@ function WhyRow({ m }) {
       </div>
       <div className="bsum-row-side">
         <span className="bsum-row-detail">{m.detail}</span>
-        <span className={`bsum-row-delta ${m.good ? 'pos' : 'neg'}`}>{signed(m.delta)}</span>
+        <span className={`bsum-row-delta ${m.impact > 0 ? 'pos' : m.impact < 0 ? 'neg' : ''}`}>{signed(m.impact)}</span>
       </div>
     </div>
   )
