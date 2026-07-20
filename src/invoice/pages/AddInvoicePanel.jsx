@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { sb } from '../supabase'
 import { todayStr } from '../utils/helpers'
+import { insertAdaptive } from '../utils/insertAdaptive'
 import LineItemsEditor from '../components/LineItemsEditor'
 import ExcelUploadButton from '../components/ExcelUploadButton'
 
@@ -118,17 +119,12 @@ export default function AddInvoicePanel({ cfg, onSaved, invoices, prefill, onPre
           return {
             invoice_number: invnum,
             date: dateFmt,
-            li_date: dateFmt,
             description: r.desc,
-            desc: r.desc,
             qty: parseFloat(r.qty),
-            quantity: parseFloat(r.qty),
-            price: parseFloat(r.rate || 0),
-            rate: parseFloat(r.rate || 0),
+            unit_price: parseFloat(r.rate || 0),
           }
         })
-        const { error: liErr } = await sb.from('line_items').insert(liData)
-        if (liErr) throw liErr
+        await insertAdaptive('line_items', liData)
       }
 
       setSuccess(`Invoice #${invnum} saved successfully!`)

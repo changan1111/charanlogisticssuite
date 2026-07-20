@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { sb } from '../supabase'
+import { insertAdaptive } from '../utils/insertAdaptive'
 import LineItemsEditor from './LineItemsEditor'
 import ExcelUploadButton from './ExcelUploadButton'
 
@@ -24,16 +25,16 @@ export default function EditInvoiceModal({ inv, lineItemCache, cfg, onClose, onS
     const mapRows = (items) => items.map(li => ({
       id: li.id ?? Math.random(),
       date: (() => {
-        const raw = li.date || li.li_date || li.delivery_date || li.item_date || ''
+        const raw = li.date || ''
         if (!raw) return ''
         const parts = raw.split(/[-\/]/)
         if (parts.length !== 3) return ''
         if (parts[0].length === 4) return raw
         return `${parts[2]}-${parts[1]}-${parts[0]}`
       })(),
-      desc: li.description || li.desc || li.item || '',
-      qty: String(parseFloat(li.qty || li.quantity || li.units || 1) || 1),
-      rate: String(parseFloat(li.unit_price || li.price || li.rate || 0) || 0),
+      desc: li.description || '',
+      qty: String(parseFloat(li.qty || 1) || 1),
+      rate: String(parseFloat(li.unit_price || 0) || 0),
     }))
 
     const invNum = inv.number ?? inv.invoice_number
@@ -88,18 +89,15 @@ export default function EditInvoiceModal({ inv, lineItemCache, cfg, onClose, onS
           const dateRaw = r.date
           let dateFmt = ''
           if (dateRaw) { const [y2, m2, d2] = dateRaw.split('-'); dateFmt = `${d2}-${m2}-${y2}` }
-          const desc = r.desc || r.description || ''
-          const qty = parseFloat(r.qty) || 1
-          const price = parseFloat(r.rate || r.unit_price || 0)
           return {
             invoice_number: invNum,
             date: dateFmt,
-            description: desc,
-            qty: qty,
-            unit_price: price,
+            description: r.desc || r.description || '',
+            qty: parseFloat(r.qty) || 1,
+            unit_price: parseFloat(r.rate || r.unit_price || 0),
           }
         })
-        await sb.from('line_items').insert(liData)
+        await insertAdaptive('line_items', liData)
       }
 
       setSuccess('✅ Invoice updated successfully!')
