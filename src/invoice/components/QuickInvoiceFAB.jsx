@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { insertAdaptive } from '../utils/insertAdaptive'
 import { sb } from '../supabase'
 import { fmt, todayStr } from '../utils/helpers'
 
@@ -292,13 +291,14 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
           total: data.total,
         }, { onConflict: 'invoice_number' })
         if (e1) throw e1
-        await insertAdaptive('line_items', {
+        const { error: e2 } = await sb.from('line_items').insert({
           invoice_number: invNum,
           date: data.deliveryDateDisplay,
           description: data.desc,
           qty: data.qty,
           unit_price: data.rate,
         })
+        if (e2) throw e2
         addMsg({ from: 'bot', text: `✅ Invoice <strong>#${invNum}</strong> saved!`, success: true })
         onSaved()
       } catch(e) {

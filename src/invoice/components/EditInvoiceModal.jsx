@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { sb } from '../supabase'
-import { insertAdaptive } from '../utils/insertAdaptive'
 import LineItemsEditor from './LineItemsEditor'
 import ExcelUploadButton from './ExcelUploadButton'
 
@@ -97,7 +96,8 @@ export default function EditInvoiceModal({ inv, lineItemCache, cfg, onClose, onS
             unit_price: parseFloat(r.rate || r.unit_price || 0),
           }
         })
-        await insertAdaptive('line_items', liData)
+        const { error: liErr } = await sb.from('line_items').insert(liData)
+        if (liErr) throw liErr
       }
 
       setSuccess('✅ Invoice updated successfully!')
