@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { sb } from './supabase'
+import { getQty, getPrice } from './utils/helpers'
 import Nav from './components/Nav'
 import SettingsBar from './components/SettingsBar'
 import InvoicesPanel from './pages/InvoicesPanel'
@@ -144,7 +145,7 @@ export default function InvoiceSection() {
           onMarkPaid={async (inv) => {
             const displayTotal = (() => {
               const items = lineItemCache[inv.number] || inv.items || []
-              const t = items.reduce((s, li) => s + (parseFloat(li.qty || li.quantity || 1)) * (parseFloat(li.unit_price || li.price || li.rate || 0)), 0)
+              const t = items.reduce((s, li) => s + getQty(li) * getPrice(li), 0)
               return t > 0 ? t : (parseFloat(inv.total) || 0)
             })()
             const password = window.prompt(`🔐 Enter your login password to mark Invoice #${inv.number} as Paid:\n\nClient: ${inv.name}\nAmount: S$ ${displayTotal.toFixed(2)}`)

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { fmt, cap, shortAddr } from '../utils/helpers'
+import { fmt, cap, shortAddr, getQty, getPrice } from '../utils/helpers'
 import { makeInvoicePDF } from '../utils/pdfGen'
 
 const PAGE_SIZES = [10, 25, 50, 100]
@@ -12,7 +12,7 @@ function mkBadge(s) {
 function buildInvoice(raw, lineItemCache) {
   const invKey = raw.number ?? raw.invoice_number ?? raw.id
   const items = lineItemCache[invKey] || []
-  const itemsTotal = items.reduce((s, li) => s + (parseFloat(li.qty ?? li.quantity ?? 1) || 1) * (parseFloat(li.price ?? li.rate ?? 0) || 0), 0)
+  const itemsTotal = items.reduce((s, li) => s + getQty(li) * getPrice(li), 0)
   const rawTotal = parseFloat(raw.total_amount ?? raw.total ?? raw.amount ?? 0)
   // Use items total only if items exist AND total > 0, else fall back to raw total
   const total = (items.length > 0 && itemsTotal > 0) ? itemsTotal : rawTotal
@@ -199,7 +199,7 @@ export default function InvoicesPanel({ invoices, lineItemCache, loading, cfg, o
                 <td style={{ textAlign: 'right' }}><span className="amtcell">S$ {fmt(
                   (() => {
                     const its = lineItemCache[inv.number] || inv.items || []
-                    const it = its.reduce((s, li) => s + (parseFloat(li.qty ?? li.quantity ?? 1) || 1) * (parseFloat(li.price ?? li.rate ?? 0) || 0), 0)
+                    const it = its.reduce((s, li) => s + getQty(li) * getPrice(li), 0)
                     return it > 0 ? it : (parseFloat(inv.total) || 0)
                   })()
                 )}</span></td>

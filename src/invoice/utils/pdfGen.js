@@ -84,7 +84,7 @@ export async function makeInvoicePDF(inv, cfg) {
   const CONTENT_TOP = HEADER_H + 4
   const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' })
   // Calculate display total from line items, fallback to inv.total
-  const itemsTotal = (inv.items || []).reduce((s, li) => s + (parseFloat(li.qty ?? li.quantity ?? 1) || 1) * (parseFloat(li.price ?? li.rate ?? 0) || 0), 0)
+  const itemsTotal = (inv.items || []).reduce((s, li) => s + getQty(li) * getPrice(li), 0)
   const displayTotal = itemsTotal > 0 ? itemsTotal : (parseFloat(inv.total) || 0)
 
   // Preload images BEFORE rendering so didDrawPage can use sync draw
