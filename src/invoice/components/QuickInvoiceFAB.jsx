@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { sb } from '../supabase'
 import { fmt, todayStr } from '../utils/helpers'
+import { makeInvoicePDF } from '../utils/pdfGen'
 
 const initState = () => ({ step: 0, data: {} })
 
@@ -102,6 +103,44 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
     setOpen(o => !o)
   }
 
+  // ── PDF filename helper (matches InvoicesPanel / InvoiceModal convention) ──
+  const pdfFileName = (full) => {
+    const runNum = (full.number || '').split('/').pop() || '0000'
+    const cname  = (full.name || 'Client').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').trim()
+    const bd     = (full.billingDate || '').replace(/[\/\-]/g, '-').trim()
+    return `${runNum}_${cname}_Invoice_${bd}.pdf`
+  }
+
+  // ── View / Download / Share — same pattern as InvoiceModal.jsx ──
+  const viewInvoicePDF = async (full) => {
+    const blob = await makeInvoicePDF(full, cfg)
+    const url  = URL.createObjectURL(blob)
+    window.open(url, '_blank')
+    setTimeout(() => URL.revokeObjectURL(url), 60000)
+  }
+
+  const downloadInvoicePDF = async (full) => {
+    const blob = await makeInvoicePDF(full, cfg)
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href     = url
+    a.download = pdfFileName(full)
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const shareInvoicePDF = async (full) => {
+    const blob = await makeInvoicePDF(full, cfg)
+    const fileName = pdfFileName(full)
+    const file = new File([blob], fileName, { type: 'application/pdf' })
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: fileName.replace('.pdf', ''), text: 'Please find the attached invoice.' }).catch(() => {})
+    } else {
+      const msg = `Invoice #${full.number} from ${cfg.name}\n\nClient: ${full.name}\nTotal: S$ ${fmt(full.total)}\n\n${full.billingDate ? 'Billing Date: ' + full.billingDate : ''}\n\nPlease find the attached invoice.`
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+    }
+  }
+
   // Called when user picks a client name from the suggestion list
   const pickClient = async (name) => {
     addUser(name)
@@ -115,7 +154,6 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
         .order('updated_at', { ascending: false })
         .limit(50)
 
-      // Distinct non-empty addresses only
       const uniqueAddrs = [...new Set(
         (data || []).map(r => (r.address || '').trim()).filter(Boolean)
       )]
@@ -215,7 +253,6 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
           .order('updated_at', { ascending: false })
           .limit(50)
 
-        // Deduplicate by name+address combo
         const seen = new Set()
         const combos = (data || []).filter(r => {
           const key = (r.name||'').trim() + '||' + (r.address||'').trim()
@@ -291,15 +328,33 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
           total: data.total,
         }, { onConflict: 'invoice_number' })
         if (e1) throw e1
-        const { error: e2 } = await sb.from('line_items').insert({
+        await sb.from('line_items').insert({
           invoice_number: invNum,
-          date: data.deliveryDateDisplay,
-          description: data.desc,
-          qty: data.qty,
-          unit_price: data.rate,
+          date: data.deliveryDateDisplay, li_date: data.deliveryDateDisplay,
+          description: data.desc, desc: data.desc,
+          qty: data.qty, quantity: data.qty,
+          price: data.rate, rate: data.rate,
         })
-        if (e2) throw e2
-        addMsg({ from: 'bot', text: `✅ Invoice <strong>#${invNum}</strong> saved!`, success: true })
+
+        // Build the invoice object for View / Download / Share —
+        // same shape makeInvoicePDF() expects (see InvoiceModal.jsx)
+        const full = {
+          number:      invNum,
+          name:        data.clientName,
+          addr:        data.clientAddr || '',
+          billingDate: data.billingDateDisplay,
+          due:         '',
+          status:      data.status,
+          total:       data.total,
+          items: [{
+            description: data.desc, desc: data.desc,
+            qty: data.qty, quantity: data.qty,
+            unit_price: data.rate, price: data.rate, rate: data.rate,
+            date: data.deliveryDateDisplay, li_date: data.deliveryDateDisplay,
+          }],
+        }
+
+        addMsg({ from: 'bot', text: `✅ Invoice <strong>#${invNum}</strong> saved!`, success: true, result: full })
         onSaved()
       } catch(e) {
         addBot('❌ Error: ' + (e.message || 'save failed'))
@@ -346,6 +401,16 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
             <div key={m.id} className={`qic-msg ${m.from}`}>
               {m.text && <div className="qic-bubble" dangerouslySetInnerHTML={{ __html: m.text }} />}
 
+              {m.result && (
+                <div className="qic-result">
+                  <div className="qic-result-actions">
+                    <button className="qic-result-btn secondary" onClick={() => viewInvoicePDF(m.result)}>👁 View</button>
+                    <button className="qic-result-btn primary" onClick={() => downloadInvoicePDF(m.result)}>⬇ Download</button>
+                    <button className="qic-result-btn secondary" onClick={() => shareInvoicePDF(m.result)}>📤 Share</button>
+                  </div>
+                </div>
+              )}
+
               {m.summary && (
                 <div className="qic-summary">
                   {Object.entries(m.summary).map(([k, v]) => (
@@ -355,7 +420,6 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
                 </div>
               )}
 
-              {/* Client + Address combined cards */}
               {m.clientCombos && (
                 <div className="qic-matches">
                   {m.clientCombos.map((c, i) => (
@@ -368,7 +432,6 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
                 </div>
               )}
 
-              {/* None of these — create new */}
               {m.noneOfThese && (
                 <div className="qic-matches">
                   <div className="qic-match-item" onClick={() => {
@@ -383,7 +446,6 @@ export default function QuickInvoiceFAB({ invoices, cfg, onSaved }) {
                 </div>
               )}
 
-              {/* Address options (manual entry fallback) */}
               {m.addrOptions !== undefined && (
                 <div className="qic-matches">
                   {m.allowManual && (
