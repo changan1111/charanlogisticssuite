@@ -768,8 +768,4 @@ body {
 
   /* Hide hamburger — bottom tabs handle nav */
   .nav-hamburger { display: none !important; }
-
-  /* Hide desktop sidebar on mobile */
-  .sidebar { display: none !important; }
-  .sb-overlay { display: none !important; }
 }
